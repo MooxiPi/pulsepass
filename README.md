@@ -1,6 +1,19 @@
 # PulsePass
 
-Implementación académica de la capa de persistencia definida en el PRD de PulsePass.
+Implementación académica de una plataforma de gestión
+de eventos, artistas, usuarios y entradas.
+
+El proyecto utiliza una arquitectura por capas con
+Spring Boot:
+
+- Capa de persistencia: entidades JPA y repositories.
+- Capa de servicios: lógica y reglas de negocio.
+- Capa de controladores REST: endpoints HTTP,
+  validación de solicitudes y manejo de errores.
+
+Tecnologías principales: Java 21, Spring Boot 4.1.1,
+Maven, PostgreSQL, Flyway, MapStruct, JUnit 5,
+Mockito, MockMvc y Testcontainers.
 
 ## Tecnologías
 
@@ -27,7 +40,7 @@ Este proyecto implementa únicamente el dominio y la persistencia del MVP:
 - Migraciones Flyway V1, V2 y V3
 - Pruebas de integración contra PostgreSQL real mediante Testcontainers
 
-No incluye REST, Service, autenticación, pagos ni frontend, porque están fuera del alcance del PRD.
+No incluye  autenticación, pagos ni frontend, porque están fuera del alcance del PRD.
 
 ## Migraciones
 
@@ -150,3 +163,72 @@ BUILD SUCCESS
 - La tabla `event_artists` usa PK compuesta `(event_id, artist_id)` para evitar asociaciones duplicadas.
 - `user_profiles.user_id` es UNIQUE para garantizar la relación 1:1.
 - Hibernate usa `ddl-auto=validate`; Flyway es el único responsable de crear/evolucionar el esquema.
+
+
+## API REST
+
+La aplicación expone 20 operaciones HTTP mediante cinco controladores.
+
+### Venues
+- GET /api/venues/{code}
+- GET /api/venues/active
+
+### Events
+- POST /api/events
+- GET /api/events/{eventCode}
+- GET /api/events/published
+- PATCH /api/events/{eventCode}/publish
+- POST /api/events/{eventCode}/artists/{artistId}
+- GET /api/events/by-artist?stageName=...
+
+### Artists
+- GET /api/artists/{id}
+- GET /api/artists/by-stage-name?stageName=...
+- GET /api/artists/active
+
+### Users
+- POST /api/users
+- GET /api/users/by-email?email=...
+- GET /api/users/by-username?username=...
+
+### Tickets
+- POST /api/tickets
+- GET /api/tickets/{ticketCode}
+- GET /api/tickets/by-user?email=...
+- GET /api/events/{eventCode}/tickets/paid
+- PATCH /api/tickets/{ticketCode}/cancel
+- PATCH /api/tickets/{ticketCode}/use
+
+## Validación y manejo de errores
+
+Los Controllers utilizan Bean Validation y delegan
+las reglas de negocio a los Services.
+
+GlobalExceptionHandler centraliza las respuestas HTTP:
+
+- 400: solicitud inválida
+- 404: recurso inexistente
+- 409: duplicados y conflictos de negocio
+- 500: error interno inesperado
+
+Los errores siguen el contrato ErrorResponse.
+
+## Pruebas automatizadas
+
+El proyecto utiliza JUnit 5, Mockito, MockMvc y
+Testcontainers.
+
+Para ejecutar únicamente las pruebas HTTP:
+
+    mvn '-Dtest=*ControllerTest' test
+
+Para ejecutar todas las pruebas:
+
+    mvn clean test
+
+Docker Desktop debe estar funcionando para las
+pruebas de persistencia con Testcontainers.
+
+Última ejecución verificada:
+59 pruebas, 0 fallidas, 0 errores.
+BUILD SUCCESS.
