@@ -73,6 +73,31 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthentication(Exception ex) {
+        return buildError(HttpStatus.UNAUTHORIZED, "Authentication required or invalid credentials");
+    }
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDenied(Exception ex) {
+        return buildError(HttpStatus.FORBIDDEN, "Access denied");
+    }
+    @ExceptionHandler({org.springframework.web.bind.MissingServletRequestParameterException.class,
+            org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class, IllegalArgumentException.class})
+    public ResponseEntity<ErrorResponse> handleBadRequest(Exception ex) {
+        return buildError(HttpStatus.BAD_REQUEST, "Invalid request");
+    }
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleIntegrity(Exception ex) {
+        return buildError(HttpStatus.CONFLICT, "Resource conflicts with existing data");
+    }
+    @ExceptionHandler(org.springframework.web.servlet.resource.NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponse> handleMissingRoute(Exception ex) {
+        return buildError(HttpStatus.NOT_FOUND, "Resource not found");
+    }
+    @ExceptionHandler(org.springframework.web.HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorResponse> handleMethodNotAllowed(Exception ex) {
+        return buildError(HttpStatus.METHOD_NOT_ALLOWED, "Method not allowed");
+    }
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneralException(
             Exception ex) {

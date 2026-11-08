@@ -21,9 +21,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(UserController.class)
-@Import(GlobalExceptionHandler.class)
+@Import({GlobalExceptionHandler.class, com.pulsepass.security.SecurityConfig.class,
+    com.pulsepass.security.SecurityErrorWriter.class})
+@org.springframework.security.test.context.support.WithMockUser(roles={"USER","STAFF","ADMIN"})
 class UserControllerTest {
 
+    @MockitoBean private com.pulsepass.security.JwtService jwtService;
+    @MockitoBean private com.pulsepass.security.CustomUserDetailsService userDetailsService;
     @Autowired
     private MockMvc mockMvc;
 
@@ -45,7 +49,8 @@ class UserControllerTest {
               "lastName": "Perez",
               "phone": "3001234567",
               "city": "Santa Marta",
-              "birthDate": "2000-05-15"
+              "birthDate": "2000-05-15",
+              "password": "TestPassword2026!"
             }
             """;
 
@@ -63,7 +68,7 @@ class UserControllerTest {
 
         verify(userService).register(new RegisterUserRequest(
                 "carlos123", "carlos@example.com", "Carlos", "Perez",
-                "3001234567", "Santa Marta", LocalDate.of(2000, 5, 15)));
+                "3001234567", "Santa Marta", LocalDate.of(2000, 5, 15), "TestPassword2026!"));
     }
 
     @Test
@@ -76,7 +81,8 @@ class UserControllerTest {
                               "email": "correo-invalido",
                               "firstName": "Carlos",
                               "lastName": "Perez",
-                              "birthDate": "2000-05-15"
+                              "birthDate": "2000-05-15",
+              "password": "TestPassword2026!"
                             }
                             """))
                 .andExpect(status().isBadRequest())

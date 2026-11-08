@@ -23,20 +23,29 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
     private final UserMapper userMapper;
+    private final com.pulsepass.repository.UserCredentialRepository credentials;
+    private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
     public UserServiceImpl(
             UserRepository userRepository,
             UserProfileRepository userProfileRepository,
-            UserMapper userMapper
+            UserMapper userMapper,
+            com.pulsepass.repository.UserCredentialRepository credentials,
+            org.springframework.security.crypto.password.PasswordEncoder passwordEncoder
     ) {
         this.userRepository = userRepository;
         this.userProfileRepository = userProfileRepository;
         this.userMapper = userMapper;
+        this.credentials = credentials; this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     @Transactional
     public UserResponse register(RegisterUserRequest request) {
+
+        if (request.username().contains("@")) {
+            throw new IllegalArgumentException("Username must not contain @");
+        }
 
         if (userRepository.existsByUsername(request.username())) {
             throw new DuplicateResourceException(
@@ -50,6 +59,12 @@ public class UserServiceImpl implements UserService {
             );
         }
 
+        if (userRepository.existsByUsernameIgnoreCase(request.email())) {
+            throw new DuplicateResourceException(
+                    "Email conflicts with an existing username"
+            );
+        }
+
         if (request.birthDate() != null
                 && request.birthDate().isAfter(LocalDate.now())) {
 
@@ -58,6 +73,8 @@ public class UserServiceImpl implements UserService {
             );
         }
 
+        if (!com.pulsepass.security.PasswordPolicy.valid(request.password()))
+            throw new IllegalArgumentException("Invalid password length");
         User user = new User(
                 request.username(),
                 request.email(),
@@ -66,6 +83,8 @@ public class UserServiceImpl implements UserService {
 
         User savedUser = userRepository.save(user);
 
+        credentials.save(new com.pulsepass.domain.UserCredential(savedUser.getId(),
+            passwordEncoder.encode(request.password()), java.util.Set.of(com.pulsepass.domain.enums.Role.USER)));
         UserProfile profile = new UserProfile(
                 request.firstName(),
                 request.lastName(),
@@ -85,6 +104,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN') or @authorizationService.email(#email)")
     public UserResponse findByEmail(String email) {
 
         User user = userRepository
@@ -101,6 +121,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN') or @authorizationService.username(#username)")
     public UserResponse findByUsername(String username) {
 
         User user = userRepository

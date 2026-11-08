@@ -32,6 +32,13 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class EventServiceImplTest {
+    @org.junit.jupiter.api.BeforeEach void operatorContext() {
+        org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(
+            new org.springframework.security.authentication.UsernamePasswordAuthenticationToken("admin", "", java.util.List.of(
+                new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_ADMIN"))));
+    }
+    @org.junit.jupiter.api.AfterEach void clearContext() { org.springframework.security.core.context.SecurityContextHolder.clearContext(); }
+
 
     @Mock
     private EventRepository eventRepository;

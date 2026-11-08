@@ -53,6 +53,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     @Transactional
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('USER') and @authorizationService.email(#request.userEmail())")
     public TicketResponse purchase(PurchaseTicketRequest request) {
 
         User user = userRepository
@@ -139,6 +140,7 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('STAFF','ADMIN') or @authorizationService.ticket(#ticketCode)")
     public TicketResponse findByCode(String ticketCode) {
 
         Ticket ticket = findTicketOrThrow(ticketCode);
@@ -147,6 +149,7 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN') or @authorizationService.email(#email)")
     public List<TicketResponse> findByUserEmail(String email) {
 
         return ticketRepository
@@ -162,6 +165,7 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('STAFF','ADMIN')")
     public List<TicketResponse> findPaidTicketsByEvent(
             String eventCode
     ) {
@@ -178,6 +182,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     @Transactional
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN') or (hasRole('USER') and @authorizationService.ticket(#ticketCode))")
     public TicketResponse cancel(String ticketCode) {
 
         Ticket ticket = findTicketOrThrow(ticketCode);
@@ -207,6 +212,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     @Transactional
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('STAFF','ADMIN')")
     public TicketResponse markAsUsed(String ticketCode) {
 
         Ticket ticket = findTicketOrThrow(ticketCode);

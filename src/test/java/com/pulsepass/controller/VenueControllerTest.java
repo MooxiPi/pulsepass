@@ -21,9 +21,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(VenueController.class)
-@Import(GlobalExceptionHandler.class)
+@Import({GlobalExceptionHandler.class, com.pulsepass.security.SecurityConfig.class,
+    com.pulsepass.security.SecurityErrorWriter.class})
+@org.springframework.security.test.context.support.WithMockUser(roles={"USER","STAFF","ADMIN"})
 class VenueControllerTest {
 
+    @MockitoBean private com.pulsepass.security.JwtService jwtService;
+    @MockitoBean private com.pulsepass.security.CustomUserDetailsService userDetailsService;
     @Autowired
     private MockMvc mockMvc;
 

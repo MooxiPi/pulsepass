@@ -37,6 +37,11 @@ class UserServiceImplTest {
     @Mock
     private UserMapper userMapper;
 
+    @Mock
+    private com.pulsepass.repository.UserCredentialRepository credentials;
+    @Mock
+    private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+
     @InjectMocks
     private UserServiceImpl userService;
 
@@ -53,7 +58,7 @@ class UserServiceImplTest {
                         "3001234567",
                         "Santa Marta",
                         LocalDate.of(2000, 5, 10)
-                );
+                , "TestPassword2026!");
 
         User savedUser =
                 new User(
@@ -127,7 +132,7 @@ class UserServiceImplTest {
                         null,
                         "Santa Marta",
                         LocalDate.of(2000, 5, 10)
-                );
+                , "TestPassword2026!");
 
         when(userRepository.existsByUsername("andrea"))
                 .thenReturn(true);
@@ -159,7 +164,7 @@ class UserServiceImplTest {
                         null,
                         "Santa Marta",
                         LocalDate.of(2000, 5, 10)
-                );
+                , "TestPassword2026!");
 
         when(userRepository.existsByUsername("andrea"))
                 .thenReturn(false);
@@ -194,7 +199,7 @@ class UserServiceImplTest {
                         null,
                         "Santa Marta",
                         LocalDate.now().plusDays(1)
-                );
+                , "TestPassword2026!");
 
         when(userRepository.existsByUsername("andrea"))
                 .thenReturn(false);
