@@ -1,0 +1,18 @@
+$kind: http-request
+name: E2E-EVT-06 | Eventos por artista [200]
+description: |-
+  ID: E2E-EVT-06
+  Objetivo: Eventos por artista
+  Precondiciones: Artista del seed asociado a un evento publicado y a uno en DRAFT.
+  Actor: ANONYMOUS
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 200
+  Revisión manual: Incluye publicado asociado; excluye draftEventCode.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/events/by-artist?stageName={{artistStageName}}"
+method: GET
+headers:
+  Accept: application/json
+auth:
+  type: noauth
+order: 7000

@@ -1,0 +1,18 @@
+$kind: http-request
+name: TC-AUTH-012 | Token en query no autentica [401]
+description: |-
+  ID: TC-AUTH-012
+  Objetivo: Token en query no autentica
+  Precondiciones: userAToken vigente colocado solo en query string; no enviar Authorization.
+  Actor: ANONYMOUS
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 401
+  Revisión manual: ErrorResponse con timestamp, status, error, message y details; sin secretos.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/auth/me?token={{userAToken}}"
+method: GET
+headers:
+  Accept: application/json
+auth:
+  type: noauth
+order: 36000

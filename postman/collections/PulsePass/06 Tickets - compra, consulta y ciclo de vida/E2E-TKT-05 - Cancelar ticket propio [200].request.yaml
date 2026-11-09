@@ -1,0 +1,20 @@
+$kind: http-request
+name: E2E-TKT-05 | Cancelar ticket propio [200]
+description: |-
+  ID: E2E-TKT-05
+  Objetivo: Cancelar ticket propio
+  Precondiciones: ticketCancelableCode aún PAID y propiedad de USER_A; ejecutar TC-SEC-008..013 y NOAUTH-06..11 con tickets PAID antes de esta transición.
+  Actor: userA
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 200
+  Revisión manual: CANCELLED; volver a consultar ticket con A para comprobar persistencia.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/tickets/{{ticketCancelableCode}}/cancel"
+method: PATCH
+headers:
+  Accept: application/json
+auth:
+  type: bearer
+  credentials:
+    token: "{{userAToken}}"
+order: 6000

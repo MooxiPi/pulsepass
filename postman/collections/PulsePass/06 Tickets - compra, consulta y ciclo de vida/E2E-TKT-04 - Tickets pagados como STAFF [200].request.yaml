@@ -1,0 +1,20 @@
+$kind: http-request
+name: E2E-TKT-04 | Tickets pagados como STAFF [200]
+description: |-
+  ID: E2E-TKT-04
+  Objetivo: Tickets pagados como STAFF
+  Precondiciones: Ambos tickets de USER_A aún PAID; staffToken vigente; ejecutar antes de cancelar o usar.
+  Actor: staff
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 200
+  Revisión manual: Solo PAID del evento. Repetir tras cancelar/usar: esos tickets ya no aparecen.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/events/{{publishedEventCode}}/tickets/paid"
+method: GET
+headers:
+  Accept: application/json
+auth:
+  type: bearer
+  credentials:
+    token: "{{staffToken}}"
+order: 5000

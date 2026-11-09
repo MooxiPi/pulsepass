@@ -1,0 +1,20 @@
+$kind: http-request
+name: ME-admin | Identidad admin [200]
+description: |-
+  ID: ME-admin
+  Objetivo: Identidad admin
+  Precondiciones: Login de ADMIN completado; adminToken vigente copiado manualmente.
+  Actor: admin
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 200
+  Revisión manual: userId, username, email y roles correctos; USER para A/B, STAFF o ADMIN en fixtures.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/auth/me"
+method: GET
+headers:
+  Accept: application/json
+auth:
+  type: bearer
+  credentials:
+    token: "{{adminToken}}"
+order: 11000

@@ -1,0 +1,20 @@
+$kind: http-request
+name: VERIFY-USED | Consultar ticket usado [200]
+description: |-
+  ID: VERIFY-USED
+  Objetivo: Consultar ticket usado
+  Precondiciones: E2E-TKT-06 completado; ticketUsableCode ya usado y userAToken vigente.
+  Actor: userA
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 200
+  Revisión manual: status=USED luego de E2E-TKT-06.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/tickets/{{ticketUsableCode}}"
+method: GET
+headers:
+  Accept: application/json
+auth:
+  type: bearer
+  credentials:
+    token: "{{userAToken}}"
+order: 8000

@@ -1,0 +1,20 @@
+$kind: http-request
+name: E2E-TKT-03 | Tickets propios [200]
+description: |-
+  ID: E2E-TKT-03
+  Objetivo: Tickets propios
+  Precondiciones: USER_A y sus tickets existentes; userAToken vigente.
+  Actor: userA
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 200
+  Revisión manual: Todos pertenecen a A y están ordenados por purchaseDate descendente.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/tickets/by-user?email={{userAEmail}}"
+method: GET
+headers:
+  Accept: application/json
+auth:
+  type: bearer
+  credentials:
+    token: "{{userAToken}}"
+order: 4000

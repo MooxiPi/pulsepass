@@ -1,0 +1,20 @@
+$kind: http-request
+name: E2E-TKT-06 | Marcar segundo ticket usado [200]
+description: |-
+  ID: E2E-TKT-06
+  Objetivo: Marcar segundo ticket usado
+  Precondiciones: ticketUsableCode distinto y aún PAID; completar negativas TC-SEC-008..013 y NOAUTH-06..11 antes; staffToken vigente.
+  Actor: staff
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 200
+  Revisión manual: USED; GET posterior con A debe mostrar USED. No usar el ticket cancelado.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/tickets/{{ticketUsableCode}}/use"
+method: PATCH
+headers:
+  Accept: application/json
+auth:
+  type: bearer
+  credentials:
+    token: "{{staffToken}}"
+order: 7000

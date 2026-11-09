@@ -1,0 +1,20 @@
+$kind: http-request
+name: TC-AUTH-008 | JWT rechazado malformed [401]
+description: |-
+  ID: TC-AUTH-008
+  Objetivo: JWT rechazado malformed
+  Precondiciones: malformedToken contiene texto que no forma un JWT; recurso protegido.
+  Actor: malformed
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 401
+  Revisión manual: ErrorResponse con timestamp, status, error, message y details; sin secretos.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/auth/me"
+method: GET
+headers:
+  Accept: application/json
+auth:
+  type: bearer
+  credentials:
+    token: "{{malformedToken}}"
+order: 31000

@@ -1,0 +1,33 @@
+$kind: http-request
+name: TC-SEC-001 | Permiso denegado 001 [403]
+description: |-
+  ID: TC-SEC-001
+  Objetivo: Permiso denegado 001
+  Precondiciones: userAToken vigente; código {{runId}}-forbidden aún inexistente y payload válido; verificar que no se crea.
+  Actor: userA
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 403
+  Revisión manual: 403 + ErrorResponse; el evento solicitado no se crea (comprobar con ADMIN).
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/events"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "eventCode": "{{runId}}-forbidden",
+      "name": "PulsePass E2E {{runId}}",
+      "description": "Evento manual",
+      "category": "MUSIC",
+      "eventDate": "{{futureEventDate}}",
+      "minimumAge": 0,
+      "venueCode": "{{venueActiveCode}}"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{userAToken}}"
+order: 15000

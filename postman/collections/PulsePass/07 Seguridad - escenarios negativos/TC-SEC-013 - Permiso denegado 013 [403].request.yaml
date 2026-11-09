@@ -1,0 +1,20 @@
+$kind: http-request
+name: TC-SEC-013 | Permiso denegado 013 [403]
+description: |-
+  ID: TC-SEC-013
+  Objetivo: Permiso denegado 013
+  Precondiciones: Tickets PAID del evento; userAToken vigente; comprobar que USER no ve lista operativa.
+  Actor: userA
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 403
+  Revisión manual: 403 + ErrorResponse; no exponer la lista operativa de tickets.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/events/{{publishedEventCode}}/tickets/paid"
+method: GET
+headers:
+  Accept: application/json
+auth:
+  type: bearer
+  credentials:
+    token: "{{userAToken}}"
+order: 26000

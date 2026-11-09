@@ -1,0 +1,4 @@
+$kind: collection
+id: c135b3aa-fe99-470f-9d7a-70dca844df8f
+name: PulsePass — E2E Manual
+description: "Ejecución manual con Send. Sin scripts ni Runner. Leer tests/e2e/README.md y seguir checklist-e2e-manual.md. 20 rutas de negocio + login + me. Secuencia crítica: en descubrimiento público usar eventos del seed; repetir consultas públicas tras publicar el evento nuevo. Con ambos tickets PAID, ejecutar NOAUTH-06..11 y TC-SEC-008..013 de la carpeta 07; volver a la carpeta 06 para cancelar y usar."

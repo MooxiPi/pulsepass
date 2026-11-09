@@ -1,0 +1,20 @@
+$kind: http-request
+name: TC-AUTH-010 | JWT rechazado expired [401]
+description: |-
+  ID: TC-AUTH-010
+  Objetivo: JWT rechazado expired
+  Precondiciones: expiredToken copiado de un JWT emitido y ya vencido; recurso protegido.
+  Actor: expired
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 401
+  Revisión manual: ErrorResponse con timestamp, status, error, message y details; sin secretos.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/auth/me"
+method: GET
+headers:
+  Accept: application/json
+auth:
+  type: bearer
+  credentials:
+    token: "{{expiredToken}}"
+order: 33000

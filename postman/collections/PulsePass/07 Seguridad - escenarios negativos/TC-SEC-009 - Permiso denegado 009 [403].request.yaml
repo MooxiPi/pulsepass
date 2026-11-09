@@ -1,0 +1,20 @@
+$kind: http-request
+name: TC-SEC-009 | Permiso denegado 009 [403]
+description: |-
+  ID: TC-SEC-009
+  Objetivo: Permiso denegado 009
+  Precondiciones: ticketCancelableCode propio de A aún PAID; userBToken vigente; ejecutar antes de cancelación.
+  Actor: userB
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 403
+  Revisión manual: 403 + ErrorResponse, sin datos del ticket; USER_A confirma que sigue PAID.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/tickets/{{ticketCancelableCode}}"
+method: GET
+headers:
+  Accept: application/json
+auth:
+  type: bearer
+  credentials:
+    token: "{{userBToken}}"
+order: 22000

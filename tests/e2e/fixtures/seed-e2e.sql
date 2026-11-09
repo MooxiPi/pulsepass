@@ -17,7 +17,7 @@ INSERT INTO user_roles(user_id,role)
 SELECT id, CASE WHEN username=:'runId'||'-admin' THEN 'ADMIN' WHEN username=:'runId'||'-staff' THEN 'STAFF' ELSE 'USER' END
 FROM users WHERE username IN (:'runId'||'-admin',:'runId'||'-staff',:'runId'||'-inactive');
 INSERT INTO events(event_code,name,category,status,event_date,minimum_age,venue_id)
-SELECT :'runId'||'-'||code,'Evento E2E','MUSIC',status,localtimestamp+interval '1 year',age,v.id
+SELECT :'runId'||'-'||fixtures.code,'Evento E2E','MUSIC',fixtures.status,localtimestamp+interval '1 year',fixtures.age,v.id
 FROM venues v CROSS JOIN (VALUES ('published','PUBLISHED',0),('draft','DRAFT',0),('full','SOLD_OUT',0),('age','PUBLISHED',120)) AS fixtures(code,status,age)
 WHERE v.code=:'runId'||'-venue';
 INSERT INTO event_artists(event_id,artist_id)

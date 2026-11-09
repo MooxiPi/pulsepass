@@ -1,0 +1,31 @@
+$kind: http-request
+name: NOAUTH-01 | Sin Bearer /api/events [401]
+description: |-
+  ID: NOAUTH-01
+  Objetivo: Sin Bearer /api/events
+  Precondiciones: Payload de evento válido con venue activo y código nuevo; no enviar Authorization.
+  Actor: ANONYMOUS
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 401
+  Revisión manual: ErrorResponse con timestamp, status, error, message y details; sin secretos.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/events"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "eventCode": "{{newEventCode}}",
+      "name": "PulsePass E2E {{runId}}",
+      "description": "Evento manual",
+      "category": "MUSIC",
+      "eventDate": "{{futureEventDate}}",
+      "minimumAge": 0,
+      "venueCode": "{{venueActiveCode}}"
+    }
+auth:
+  type: noauth
+order: 3000

@@ -1,0 +1,20 @@
+$kind: http-request
+name: FLOW-FINAL | Revisión final de tickets [200]
+description: |-
+  ID: FLOW-FINAL
+  Objetivo: Revisión final de tickets
+  Precondiciones: E2E-TKT-05 y E2E-TKT-06 completados; ticketCancelableCode CANCELLED y ticketUsableCode USED.
+  Actor: userA
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 200
+  Revisión manual: Ticket cancelable CANCELLED; usable USED; propietario A sin mutaciones ajenas. Seguir flujos A-E del README, no ejecutar Runner.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/tickets/by-user?email={{userAEmail}}"
+method: GET
+headers:
+  Accept: application/json
+auth:
+  type: bearer
+  credentials:
+    token: "{{userAToken}}"
+order: 1000

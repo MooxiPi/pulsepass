@@ -1,0 +1,18 @@
+$kind: http-request
+name: NOAUTH-09 | Sin Bearer /api/events/{{publishedEventCode}}/tickets/paid [401]
+description: |-
+  ID: NOAUTH-09
+  Objetivo: Sin Bearer /api/events/{{publishedEventCode}}/tickets/paid
+  Precondiciones: Evento publicado con tickets PAID; no enviar Authorization.
+  Actor: ANONYMOUS
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 401
+  Revisión manual: ErrorResponse con timestamp, status, error, message y details; sin secretos.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/events/{{publishedEventCode}}/tickets/paid"
+method: GET
+headers:
+  Accept: application/json
+auth:
+  type: noauth
+order: 11000

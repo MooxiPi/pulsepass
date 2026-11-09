@@ -1,0 +1,18 @@
+$kind: http-request
+name: E2E-VEN-01 | Venue por código [200]
+description: |-
+  ID: E2E-VEN-01
+  Objetivo: Venue por código
+  Precondiciones: venueActiveCode existe en el seed y está activo.
+  Actor: ANONYMOUS
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 200
+  Revisión manual: code, name, city, address, capacity positiva y active=true coinciden.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/venues/{{venueActiveCode}}"
+method: GET
+headers:
+  Accept: application/json
+auth:
+  type: noauth
+order: 1000

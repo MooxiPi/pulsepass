@@ -1,0 +1,32 @@
+$kind: http-request
+name: TC-HTTP-409-USER | 409-USER [409]
+description: |-
+  ID: TC-HTTP-409-USER
+  Objetivo: 409-USER
+  Precondiciones: USER_A ya registrado; reenviar datos de usuario duplicado.
+  Actor: ANONYMOUS
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 409
+  Revisión manual: ErrorResponse con timestamp, status, error, message y details; sin secretos.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/users"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "username": "{{userAUsername}}",
+      "email": "{{userAEmail}}",
+      "firstName": "Andrea",
+      "lastName": "Pruebas",
+      "phone": "3000000000",
+      "city": "Santa Marta",
+      "birthDate": "1998-05-15",
+      "password": "{{userAPassword}}"
+    }
+auth:
+  type: noauth
+order: 8000

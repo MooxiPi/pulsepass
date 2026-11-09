@@ -1,0 +1,20 @@
+$kind: http-request
+name: TC-SEC-003 | Permiso denegado 003 [403]
+description: |-
+  ID: TC-SEC-003
+  Objetivo: Permiso denegado 003
+  Precondiciones: eventToPublishCode recién creado en DRAFT sin artista asociado; artistId existe y userAToken vigente; ejecutar antes de E2E-EVT-05.
+  Actor: userA
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 403
+  Revisión manual: 403 + ErrorResponse; ADMIN confirma que no se añadió el artista.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/events/{{eventToPublishCode}}/artists/{{artistId}}"
+method: POST
+headers:
+  Accept: application/json
+auth:
+  type: bearer
+  credentials:
+    token: "{{userAToken}}"
+order: 18000
