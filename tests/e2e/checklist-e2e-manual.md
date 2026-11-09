@@ -1,0 +1,93 @@
+# Checklist manual
+
+Ejecutar cada caso con Send, en este orden; no usar Runner. Preparar fixtures y tokens antes de los casos dependientes. Las negativas NOAUTH-06..11 y TC-SEC-008..013 se ejecutan con los dos tickets PAID, antes de cancelar o usar. Después de cada denegación mutable, releer con USER_A y confirmar que el estado no cambió.
+
+- [x] PRE-01: Conectividad — ANONYMOUS, HTTP 200.
+- [x] E2E-VEN-02: Venues activos — ANONYMOUS, HTTP 200.
+- [x] E2E-VEN-01: Venue por código — ANONYMOUS, HTTP 200.
+- [x] E2E-ART-03: Artistas activos — ANONYMOUS, HTTP 200.
+- [x] E2E-ART-01: Artista por ID — ANONYMOUS, HTTP 200.
+- [x] E2E-ART-02: Artista por nombre — ANONYMOUS, HTTP 200.
+- [x] E2E-EVT-03: Eventos publicados — ANONYMOUS, HTTP 200.
+- [x] E2E-EVT-02: Consultar publicado — ANONYMOUS, HTTP 200.
+- [x] E2E-EVT-06: Eventos por artista — ANONYMOUS, HTTP 200.
+- [x] TC-SEC-004: Borrador oculto — ANONYMOUS, HTTP 404.
+- [x] TC-SEC-005: Sin borradores por artista — ANONYMOUS, HTTP 200.
+- [x] TC-AUTH-001-userA: Registrar userA — ANONYMOUS, HTTP 201.
+- [x] TC-AUTH-001-userB: Registrar userB — ANONYMOUS, HTTP 201.
+- [x] LOGIN-userA: Login userA — ANONYMOUS, HTTP 200.
+- [x] LOGIN-userB: Login userB — ANONYMOUS, HTTP 200.
+- [x] LOGIN-staff: Login staff — ANONYMOUS, HTTP 200.
+- [x] LOGIN-admin: Login admin — ANONYMOUS, HTTP 200.
+- [x] LOGIN-inactive: Login inactive — ANONYMOUS, HTTP 401.
+- [x] ME-userA: Identidad userA — userA, HTTP 200.
+- [x] ME-userB: Identidad userB — userB, HTTP 200.
+- [x] ME-staff: Identidad staff — staff, HTTP 200.
+- [x] ME-admin: Identidad admin — admin, HTTP 200.
+- [x] TC-AUTH-003: Login por email — ANONYMOUS, HTTP 200.
+- [x] E2E-USR-02: Consulta propia 02 — userA, HTTP 200.
+- [x] E2E-USR-03: Consulta propia 03 — userA, HTTP 200.
+- [x] E2E-EVT-01: Crear evento — admin, HTTP 201.
+- [x] E2E-EVT-02-OPS: Consultar borrador como ADMIN — admin, HTTP 200.
+- [x] TC-SEC-015: ADMIN ve borrador — admin, HTTP 200.
+- [x] TC-SEC-001: Permiso denegado 001 — userA, HTTP 403.
+- [x] TC-SEC-002: Permiso denegado 002 — userA, HTTP 403.
+- [x] TC-SEC-002-STAFF: Permiso denegado 002-STAFF — staff, HTTP 403.
+- [x] TC-SEC-003: Permiso denegado 003 — userA, HTTP 403.
+- [x] E2E-EVT-05: Asociar artista — admin, HTTP 200.
+- [x] E2E-EVT-04: Publicar evento — admin, HTTP 200.
+  - Repetidos E2E-EVT-02/03/06 el 2026-11-09 a las 16:10–16:11 -05:00: `manual01-new` público y visible por artista; borrador ausente del listado.
+- [x] E2E-TKT-01-Cancelable: Comprar ticket Cancelable — userA, HTTP 201.
+- [x] E2E-TKT-01-Usable: Comprar ticket Usable — userA, HTTP 201.
+- [x] E2E-TKT-02: Consultar ticket propio — userA, HTTP 200.
+- [x] E2E-TKT-03: Tickets propios — userA, HTTP 200.
+- [x] E2E-TKT-04: Tickets pagados como STAFF — staff, HTTP 200.
+- [ ] NOAUTH-06: Sin Bearer /api/tickets — ANONYMOUS, HTTP 401.
+- [ ] NOAUTH-07: Sin Bearer /api/tickets/{{ticketCancelableCode}} — ANONYMOUS, HTTP 401.
+- [ ] NOAUTH-08: Sin Bearer /api/tickets/by-user?email={{userAEmail}} — ANONYMOUS, HTTP 401.
+- [ ] NOAUTH-09: Sin Bearer /api/events/{{publishedEventCode}}/tickets/paid — ANONYMOUS, HTTP 401.
+- [ ] NOAUTH-10: Sin Bearer /api/tickets/{{ticketCancelableCode}}/cancel — ANONYMOUS, HTTP 401.
+- [ ] NOAUTH-11: Sin Bearer /api/tickets/{{ticketUsableCode}}/use — ANONYMOUS, HTTP 401.
+- [ ] TC-SEC-008: Permiso denegado 008 — userA, HTTP 403.
+- [ ] TC-SEC-009: Permiso denegado 009 — userB, HTTP 403.
+- [ ] TC-SEC-010: Permiso denegado 010 — userB, HTTP 403.
+- [ ] TC-SEC-011: Permiso denegado 011 — userB, HTTP 403.
+- [ ] TC-SEC-012: Permiso denegado 012 — userB, HTTP 403.
+- [ ] TC-SEC-013: Permiso denegado 013 — userA, HTTP 403.
+- [ ] E2E-TKT-05: Cancelar ticket propio — userA, HTTP 200.
+- [ ] E2E-TKT-06: Marcar segundo ticket usado — staff, HTTP 200.
+- [ ] VERIFY-USED: Consultar ticket usado — userA, HTTP 200.
+- [ ] TC-AUTH-004: Login rechazado 004 — ANONYMOUS, HTTP 401.
+- [ ] TC-AUTH-005: Login rechazado 005 — ANONYMOUS, HTTP 401.
+- [ ] NOAUTH-01: Sin Bearer /api/events — ANONYMOUS, HTTP 401.
+- [ ] NOAUTH-02: Sin Bearer /api/events/{{draftEventCode}}/publish — ANONYMOUS, HTTP 401.
+- [ ] NOAUTH-03: Sin Bearer /api/events/{{draftEventCode}}/artists/{{artistId}} — ANONYMOUS, HTTP 401.
+- [ ] NOAUTH-04: Sin Bearer /api/users/by-email?email={{userAEmail}} — ANONYMOUS, HTTP 401.
+- [ ] NOAUTH-05: Sin Bearer /api/users/by-username?username={{userAUsername}} — ANONYMOUS, HTTP 401.
+- [ ] NOAUTH-12: Sin Bearer /api/auth/me — ANONYMOUS, HTTP 401.
+- [ ] TC-SEC-006: Permiso denegado 006 — userB, HTTP 403.
+- [ ] TC-SEC-007: Permiso denegado 007 — userB, HTTP 403.
+- [ ] TC-SEC-016: Inyección de rol ignorada — ANONYMOUS, HTTP 201.
+- [ ] TC-AUTH-008: JWT rechazado malformed — malformed, HTTP 401.
+- [ ] TC-AUTH-009: JWT rechazado tampered — tampered, HTTP 401.
+- [ ] TC-AUTH-010: JWT rechazado expired — expired, HTTP 401.
+- [ ] TC-AUTH-011-KEY: JWT rechazado wrongKey — wrongKey, HTTP 401.
+- [ ] TC-AUTH-011-ISSUER: JWT rechazado wrongIssuer — wrongIssuer, HTTP 401.
+- [ ] TC-AUTH-012: Token en query no autentica — ANONYMOUS, HTTP 401.
+- [ ] TC-AUTH-015: JWT inválido en ruta pública — malformed, HTTP 401.
+- [ ] TC-AUTH-013: Cuenta desactivada después de login — userB, HTTP 401.
+- [ ] TC-HTTP-400-REQUIRED: 400-REQUIRED — ANONYMOUS, HTTP 400.
+- [ ] TC-HTTP-400-EMAIL: 400-EMAIL — ANONYMOUS, HTTP 400.
+- [ ] TC-HTTP-400-JSON: 400-JSON — ANONYMOUS, HTTP 400.
+- [ ] TC-HTTP-400-ENUM: 400-ENUM — userA, HTTP 400.
+- [ ] TC-HTTP-400-PASSWORD: 400-PASSWORD — ANONYMOUS, HTTP 400.
+- [ ] TC-HTTP-404-VENUE: 404-VENUE — ANONYMOUS, HTTP 404.
+- [ ] TC-HTTP-404-ARTIST: 404-ARTIST — ANONYMOUS, HTTP 404.
+- [ ] TC-HTTP-409-USER: 409-USER — ANONYMOUS, HTTP 409.
+- [ ] TC-HTTP-409-CANCEL: 409-CANCEL — userA, HTTP 409.
+- [ ] TC-HTTP-409-USE: 409-USE — staff, HTTP 409.
+- [ ] TC-SEC-017: Rol STAFF revocado — staff, HTTP 403.
+- [ ] TC-HTTP-409-DRAFT: 409-DRAFT — userA, HTTP 409.
+- [ ] TC-HTTP-409-CAPACITY: 409-CAPACITY — userA, HTTP 409.
+- [ ] TC-HTTP-409-AGE: 409-AGE — userA, HTTP 409.
+- [ ] FLOW-FINAL: Revisión final de tickets — userA, HTTP 200.

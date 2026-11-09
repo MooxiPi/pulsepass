@@ -1,0 +1,20 @@
+$kind: http-request
+name: TC-AUTH-015 | JWT inválido en ruta pública [401]
+description: |-
+  ID: TC-AUTH-015
+  Objetivo: JWT inválido en ruta pública
+  Precondiciones: malformedToken presente en Bearer aun en ruta pública; comprobar política 401.
+  Actor: malformed
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 401
+  Revisión manual: ErrorResponse con timestamp, status, error, message y details; sin secretos.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/venues/active"
+method: GET
+headers:
+  Accept: application/json
+auth:
+  type: bearer
+  credentials:
+    token: "{{malformedToken}}"
+order: 37000

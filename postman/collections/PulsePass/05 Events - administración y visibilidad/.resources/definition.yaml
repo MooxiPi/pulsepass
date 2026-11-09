@@ -1,0 +1,4 @@
+$kind: collection
+name: 05 Events / administración y visibilidad
+description: Crear el evento como ADMIN; antes de asociar al artista, probar TC-SEC-003 desde la carpeta 07. Después de publicar, repetir E2E-EVT-02/03/06 de esta carpeta para confirmar visibilidad y propagación pública.
+order: 6000

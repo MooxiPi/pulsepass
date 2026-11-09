@@ -1,0 +1,29 @@
+$kind: http-request
+name: E2E-TKT-01-Usable | Comprar ticket Usable [201]
+description: |-
+  ID: E2E-TKT-01-Usable
+  Objetivo: Comprar ticket Usable
+  Precondiciones: USER_A activo y token vigente; publishedEventCode elegible; guardar un segundo código distinto para uso.
+  Actor: userA
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 201
+  Revisión manual: status=PAID, userEmail=A, eventCode correcto, price=120000.00; copiar ticketCode a ticketUsableCode.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/tickets"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "userEmail": "{{userAEmail}}",
+      "eventCode": "{{publishedEventCode}}",
+      "type": "GENERAL"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{userAToken}}"
+order: 2000

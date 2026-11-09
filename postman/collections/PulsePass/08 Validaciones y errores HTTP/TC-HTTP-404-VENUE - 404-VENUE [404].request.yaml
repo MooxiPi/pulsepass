@@ -1,0 +1,18 @@
+$kind: http-request
+name: TC-HTTP-404-VENUE | 404-VENUE [404]
+description: |-
+  ID: TC-HTTP-404-VENUE
+  Objetivo: 404-VENUE
+  Precondiciones: Código de venue inexistente para runId actual.
+  Actor: ANONYMOUS
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 404
+  Revisión manual: ErrorResponse con timestamp, status, error, message y details; sin secretos.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/venues/missing-{{runId}}"
+method: GET
+headers:
+  Accept: application/json
+auth:
+  type: noauth
+order: 6000

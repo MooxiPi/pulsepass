@@ -1,0 +1,29 @@
+$kind: http-request
+name: TC-HTTP-400-ENUM | 400-ENUM [400]
+description: |-
+  ID: TC-HTTP-400-ENUM
+  Objetivo: 400-ENUM
+  Precondiciones: userAToken vigente; evento publicado elegible; tipo de ticket inválido.
+  Actor: userA
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 400
+  Revisión manual: ErrorResponse con timestamp, status, error, message y details; sin secretos.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/tickets"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "userEmail": "{{userAEmail}}",
+      "eventCode": "{{publishedEventCode}}",
+      "type": "INVALID"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{userAToken}}"
+order: 4000

@@ -1,0 +1,20 @@
+$kind: http-request
+name: TC-SEC-015 | ADMIN ve borrador [200]
+description: |-
+  ID: TC-SEC-015
+  Objetivo: ADMIN ve borrador
+  Precondiciones: draftEventCode del seed existe en DRAFT; adminToken vigente.
+  Actor: admin
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 200
+  Revisión manual: 200 y status=DRAFT.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/events/{{draftEventCode}}"
+method: GET
+headers:
+  Accept: application/json
+auth:
+  type: bearer
+  credentials:
+    token: "{{adminToken}}"
+order: 29000

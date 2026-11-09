@@ -1,0 +1,20 @@
+$kind: http-request
+name: TC-SEC-010 | Permiso denegado 010 [403]
+description: |-
+  ID: TC-SEC-010
+  Objetivo: Permiso denegado 010
+  Precondiciones: USER_A tiene tickets PAID; userBToken vigente; consultar lista de A.
+  Actor: userB
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 403
+  Revisión manual: 403 + ErrorResponse, sin lista ni datos de tickets de USER_A.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/tickets/by-user?email={{userAEmail}}"
+method: GET
+headers:
+  Accept: application/json
+auth:
+  type: bearer
+  credentials:
+    token: "{{userBToken}}"
+order: 23000

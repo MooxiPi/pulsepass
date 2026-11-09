@@ -1,0 +1,32 @@
+$kind: http-request
+name: TC-AUTH-001-userB | Registrar userB [201]
+description: |-
+  ID: TC-AUTH-001-userB
+  Objetivo: Registrar userB
+  Precondiciones: userBUsername y userBEmail aún no registrados; username sin @, email distinto de usernames legados (sin distinguir mayúsculas); userBPassword local válido (12+ caracteres, máximo 72 bytes).
+  Actor: ANONYMOUS
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 201
+  Revisión manual: UserResponse con id, username, email, active, firstName, lastName, phone, city, birthDate. Sin JWT/password/hash. Posterior /me solo USER.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/users"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "username": "{{userBUsername}}",
+      "email": "{{userBEmail}}",
+      "firstName": "Carlos",
+      "lastName": "Pruebas",
+      "phone": "3000000000",
+      "city": "Santa Marta",
+      "birthDate": "1998-05-15",
+      "password": "{{userBPassword}}"
+    }
+auth:
+  type: noauth
+order: 2000

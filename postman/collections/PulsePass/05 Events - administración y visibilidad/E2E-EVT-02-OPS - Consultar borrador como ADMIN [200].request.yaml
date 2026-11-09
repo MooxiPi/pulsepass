@@ -1,0 +1,20 @@
+$kind: http-request
+name: E2E-EVT-02-OPS | Consultar borrador como ADMIN [200]
+description: |-
+  ID: E2E-EVT-02-OPS
+  Objetivo: Consultar borrador como ADMIN
+  Precondiciones: Evento E2E-EVT-01 creado en DRAFT; eventToPublishCode copiado; adminToken vigente.
+  Actor: admin
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 200
+  Revisión manual: status=DRAFT antes de publicar.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/events/{{eventToPublishCode}}"
+method: GET
+headers:
+  Accept: application/json
+auth:
+  type: bearer
+  credentials:
+    token: "{{adminToken}}"
+order: 2000

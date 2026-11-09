@@ -1,0 +1,27 @@
+$kind: http-request
+name: NOAUTH-06 | Sin Bearer /api/tickets [401]
+description: |-
+  ID: NOAUTH-06
+  Objetivo: Sin Bearer /api/tickets
+  Precondiciones: USER_A y evento publicado disponibles; payload de compra válido; no enviar Authorization.
+  Actor: ANONYMOUS
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 401
+  Revisión manual: ErrorResponse con timestamp, status, error, message y details; sin secretos.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/tickets"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "userEmail": "{{userAEmail}}",
+      "eventCode": "{{publishedEventCode}}",
+      "type": "GENERAL"
+    }
+auth:
+  type: noauth
+order: 8000
