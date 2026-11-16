@@ -472,6 +472,93 @@ class TicketServiceImplTest {
                 .save(any(Ticket.class));
     }
 
+    @Test
+    void cancel_ticketOfSoldOutEvent_reopensSales() {
+
+        User user = createUser(true);
+        Event event = createEvent(EventStatus.SOLD_OUT, 0, 3);
+
+        Ticket ticket = createTicket(
+                TicketStatus.PAID,
+                user,
+                event
+        );
+
+        when(ticketRepository.findByTicketCode("TCK-001"))
+                .thenReturn(Optional.of(ticket));
+
+        when(ticketRepository.save(ticket))
+                .thenReturn(ticket);
+
+        when(ticketRepository.countPaidTicketsByEventCode("CMF-2026"))
+                .thenReturn(2L);
+
+        ticketService.cancel("TCK-001");
+
+        assertThat(event.getStatus())
+                .isEqualTo(EventStatus.PUBLISHED);
+
+        verify(eventRepository)
+                .save(event);
+    }
+
+    @Test
+    void cancel_soldOutEventStillAtCapacity_keepsSoldOut() {
+
+        User user = createUser(true);
+        Event event = createEvent(EventStatus.SOLD_OUT, 0, 3);
+
+        Ticket ticket = createTicket(
+                TicketStatus.PAID,
+                user,
+                event
+        );
+
+        when(ticketRepository.findByTicketCode("TCK-001"))
+                .thenReturn(Optional.of(ticket));
+
+        when(ticketRepository.save(ticket))
+                .thenReturn(ticket);
+
+        when(ticketRepository.countPaidTicketsByEventCode("CMF-2026"))
+                .thenReturn(3L);
+
+        ticketService.cancel("TCK-001");
+
+        assertThat(event.getStatus())
+                .isEqualTo(EventStatus.SOLD_OUT);
+
+        verify(eventRepository, never())
+                .save(any(Event.class));
+    }
+
+    @Test
+    void cancel_ticketOfPublishedEvent_doesNotTouchEvent() {
+
+        User user = createUser(true);
+        Event event = createEvent(EventStatus.PUBLISHED, 0, 3);
+
+        Ticket ticket = createTicket(
+                TicketStatus.PAID,
+                user,
+                event
+        );
+
+        when(ticketRepository.findByTicketCode("TCK-001"))
+                .thenReturn(Optional.of(ticket));
+
+        when(ticketRepository.save(ticket))
+                .thenReturn(ticket);
+
+        ticketService.cancel("TCK-001");
+
+        assertThat(event.getStatus())
+                .isEqualTo(EventStatus.PUBLISHED);
+
+        verify(eventRepository, never())
+                .save(any(Event.class));
+    }
+
     private User createUser(boolean active) {
 
         return new User(

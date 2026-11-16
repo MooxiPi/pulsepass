@@ -1,52 +1,112 @@
 package com.pulsepass.security;
-import org.springframework.context.annotation.*;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.*;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.List;
+
 @Configuration
-@org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+@EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-    @Bean org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource(
-            @org.springframework.beans.factory.annotation.Value("${pulsepass.security.cors.allowed-origins:}") String origins) {
-        var config = new org.springframework.web.cors.CorsConfiguration();
-        config.setAllowedOrigins(java.util.Arrays.stream(origins.split(",")).map(String::trim).filter(s -> !s.isBlank() && !s.equals("*")).toList());
-        config.setAllowedMethods(java.util.List.of("GET", "POST", "PATCH", "OPTIONS"));
-        config.setAllowedHeaders(java.util.List.of("Authorization", "Content-Type", "Accept"));
-        config.setExposedHeaders(java.util.List.of("X-Request-ID"));
+
+    private static final int BCRYPT_STRENGTH = 12;
+
+    /** Orígenes explícitos separados por comas; vacío por defecto y nunca "*". */
+    @Bean
+    CorsConfigurationSource corsConfigurationSource(
+            @Value("${pulsepass.security.cors.allowed-origins:}") String origins) {
+
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(
+                Arrays.stream(origins.split(","))
+                        .map(String::trim)
+                        .filter(origin -> !origin.isBlank() && !origin.equals("*"))
+                        .toList()
+        );
+        config.setAllowedMethods(List.of("GET", "POST", "PATCH", "OPTIONS"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
+        config.setExposedHeaders(List.of("X-Request-ID"));
         config.setAllowCredentials(false);
-        var source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/api/**", config); return source;
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/api/**", config);
+
+        return source;
     }
-    @Bean PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(12); }
-    @Bean AuthenticationManager authenticationManager(CustomUserDetailsService users, PasswordEncoder encoder) {
-        var provider = new DaoAuthenticationProvider(users); provider.setPasswordEncoder(encoder);
+
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(BCRYPT_STRENGTH);
+    }
+
+    @Bean
+    AuthenticationManager authenticationManager(
+            CustomUserDetailsService userDetailsService,
+            PasswordEncoder passwordEncoder) {
+
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder);
+
         return new ProviderManager(provider);
     }
-    @Bean SecurityFilterChain securityFilterChain(HttpSecurity http, JwtService jwt, CustomUserDetailsService users, SecurityErrorWriter errors) throws Exception {
-        return http.csrf(c -> c.disable()).sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .cors(org.springframework.security.config.Customizer.withDefaults())
-            .formLogin(c -> c.disable()).httpBasic(c -> c.disable()).logout(c -> c.disable()).requestCache(c -> c.disable())
-            .exceptionHandling(e -> e.authenticationEntryPoint((q,s,x) -> errors.write(s, HttpStatus.UNAUTHORIZED))
-                .accessDeniedHandler((q,s,x) -> errors.write(s, HttpStatus.FORBIDDEN)))
-            .authorizeHttpRequests(a -> a
-                .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/users").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/events/*/tickets/paid").hasAnyRole("STAFF", "ADMIN")
-                .requestMatchers(HttpMethod.GET, "/api/venues/*", "/api/artists/*", "/api/events/*").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/events", "/api/events/*/artists/*").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PATCH, "/api/events/*/publish").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.POST, "/api/tickets").hasRole("USER")
-                .requestMatchers(HttpMethod.PATCH, "/api/tickets/*/use").hasAnyRole("STAFF", "ADMIN")
-                .anyRequest().authenticated())
-            .addFilterBefore(new RequestAuditFilter(), UsernamePasswordAuthenticationFilter.class)
-            .addFilterBefore(new JwtAuthenticationFilter(jwt, users, errors), UsernamePasswordAuthenticationFilter.class).build();
+
+    @Bean
+    SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            JwtService jwtService,
+            CustomUserDetailsService userDetailsService,
+            SecurityErrorWriter errorWriter) throws Exception {
+
+        return http
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .cors(Customizer.withDefaults())
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .logout(AbstractHttpConfigurer::disable)
+                .requestCache(AbstractHttpConfigurer::disable)
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint((request, response, ex) ->
+                                errorWriter.write(response, HttpStatus.UNAUTHORIZED))
+                        .accessDeniedHandler((request, response, ex) ->
+                                errorWriter.write(response, HttpStatus.FORBIDDEN)))
+                .authorizeHttpRequests(requests -> requests
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/users").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/events/*/tickets/paid").hasAnyRole("STAFF", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/venues/*", "/api/artists/*", "/api/events/*").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/events", "/api/events/*/artists/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/events/*/publish").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/tickets").hasRole("USER")
+                        .requestMatchers(HttpMethod.PATCH, "/api/tickets/*/use").hasAnyRole("STAFF", "ADMIN")
+                        .anyRequest().authenticated())
+                .addFilterBefore(
+                        new RequestAuditFilter(),
+                        UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(
+                        new JwtAuthenticationFilter(jwtService, userDetailsService, errorWriter),
+                        UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
 }

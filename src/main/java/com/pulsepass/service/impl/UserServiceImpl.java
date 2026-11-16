@@ -1,20 +1,27 @@
 package com.pulsepass.service.impl;
 
 import com.pulsepass.domain.User;
+import com.pulsepass.domain.UserCredential;
 import com.pulsepass.domain.UserProfile;
+import com.pulsepass.domain.enums.Role;
 import com.pulsepass.dto.request.RegisterUserRequest;
 import com.pulsepass.dto.response.UserResponse;
 import com.pulsepass.exception.BusinessRuleException;
 import com.pulsepass.exception.DuplicateResourceException;
 import com.pulsepass.exception.ResourceNotFoundException;
 import com.pulsepass.mapper.UserMapper;
+import com.pulsepass.repository.UserCredentialRepository;
 import com.pulsepass.repository.UserProfileRepository;
 import com.pulsepass.repository.UserRepository;
+import com.pulsepass.security.PasswordPolicy;
 import com.pulsepass.service.UserService;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Service
 @Transactional(readOnly = true)
@@ -23,20 +30,21 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
     private final UserMapper userMapper;
-    private final com.pulsepass.repository.UserCredentialRepository credentials;
-    private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+    private final UserCredentialRepository userCredentialRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public UserServiceImpl(
             UserRepository userRepository,
             UserProfileRepository userProfileRepository,
             UserMapper userMapper,
-            com.pulsepass.repository.UserCredentialRepository credentials,
-            org.springframework.security.crypto.password.PasswordEncoder passwordEncoder
+            UserCredentialRepository userCredentialRepository,
+            PasswordEncoder passwordEncoder
     ) {
         this.userRepository = userRepository;
         this.userProfileRepository = userProfileRepository;
         this.userMapper = userMapper;
-        this.credentials = credentials; this.passwordEncoder = passwordEncoder;
+        this.userCredentialRepository = userCredentialRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -73,8 +81,10 @@ public class UserServiceImpl implements UserService {
             );
         }
 
-        if (!com.pulsepass.security.PasswordPolicy.valid(request.password()))
+        if (!PasswordPolicy.valid(request.password())) {
             throw new IllegalArgumentException("Invalid password length");
+        }
+
         User user = new User(
                 request.username(),
                 request.email(),
@@ -83,8 +93,15 @@ public class UserServiceImpl implements UserService {
 
         User savedUser = userRepository.save(user);
 
-        credentials.save(new com.pulsepass.domain.UserCredential(savedUser.getId(),
-            passwordEncoder.encode(request.password()), java.util.Set.of(com.pulsepass.domain.enums.Role.USER)));
+        // El registro público siempre crea USER: el cuerpo HTTP no puede pedir otro rol.
+        userCredentialRepository.save(
+                new UserCredential(
+                        savedUser.getId(),
+                        passwordEncoder.encode(request.password()),
+                        Set.of(Role.USER)
+                )
+        );
+
         UserProfile profile = new UserProfile(
                 request.firstName(),
                 request.lastName(),
@@ -104,7 +121,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN') or @authorizationService.email(#email)")
+    @PreAuthorize("hasRole('ADMIN') or @authorizationService.email(#email)")
     public UserResponse findByEmail(String email) {
 
         User user = userRepository
@@ -121,7 +138,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN') or @authorizationService.username(#username)")
+    @PreAuthorize("hasRole('ADMIN') or @authorizationService.username(#username)")
     public UserResponse findByUsername(String username) {
 
         User user = userRepository

@@ -209,7 +209,9 @@ class SecurityHttpIT extends PostgresIntegrationTest {
         call("GET","/api/artists/by-stage-name",null,null,400);
         call("GET","/api/venues/missing",null,null,404);
         String body=registration("rollback").replace("\"firstName\":\"Test\"","\"firstName\":\""+"X".repeat(101)+"\"");
-        call("POST","/api/users",null,body,409);
+        // @Size rechaza la longitud antes de tocar la base de datos: 400 y nada persistido.
+        assertThat(call("POST","/api/users",null,body,400).body.path("details").path("firstName").asText())
+            .isEqualTo("First name must be at most 100 characters");
         assertThat(repository.findByUsername(run+"rollback")).isEmpty();
         call("POST","/api/users",null,registration("longpw").replace(password,"é".repeat(37)),400);
     }

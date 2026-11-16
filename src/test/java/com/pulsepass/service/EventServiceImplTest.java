@@ -13,6 +13,7 @@ import com.pulsepass.mapper.EventMapper;
 import com.pulsepass.repository.ArtistRepository;
 import com.pulsepass.repository.EventRepository;
 import com.pulsepass.repository.VenueRepository;
+import com.pulsepass.security.AuthorizationService;
 import com.pulsepass.service.impl.EventServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +22,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -32,13 +35,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class EventServiceImplTest {
-    @org.junit.jupiter.api.BeforeEach void operatorContext() {
-        org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(
-            new org.springframework.security.authentication.UsernamePasswordAuthenticationToken("admin", "", java.util.List.of(
-                new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_ADMIN"))));
-    }
-    @org.junit.jupiter.api.AfterEach void clearContext() { org.springframework.security.core.context.SecurityContextHolder.clearContext(); }
-
 
     @Mock
     private EventRepository eventRepository;
@@ -51,6 +47,9 @@ class EventServiceImplTest {
 
     @Mock
     private EventMapper eventMapper;
+
+    @Mock
+    private AuthorizationService authorizationService;
 
     @InjectMocks
     private EventServiceImpl eventService;
@@ -119,6 +118,101 @@ class EventServiceImplTest {
         )
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("NOT-FOUND");
+    }
+
+    @Test
+    void findByCode_soldOutEvent_isVisibleToPublic() {
+
+        Event event = createEvent("SOLD-2026", EventStatus.SOLD_OUT);
+        EventResponse expected = response(event);
+
+        when(eventRepository.findByEventCode("SOLD-2026"))
+                .thenReturn(Optional.of(event));
+
+        when(eventMapper.toResponse(event))
+                .thenReturn(expected);
+
+        assertThat(eventService.findByCode("SOLD-2026"))
+                .isEqualTo(expected);
+
+        verify(authorizationService, never())
+                .isOperator();
+    }
+
+    @Test
+    void findByCode_draftEventForPublic_throwsNotFound() {
+
+        Event event = createEvent("DRAFT-2026", EventStatus.DRAFT);
+
+        when(eventRepository.findByEventCode("DRAFT-2026"))
+                .thenReturn(Optional.of(event));
+
+        when(authorizationService.isOperator())
+                .thenReturn(false);
+
+        assertThatThrownBy(() ->
+                eventService.findByCode("DRAFT-2026")
+        )
+                .isInstanceOf(ResourceNotFoundException.class);
+
+        verify(eventMapper, never())
+                .toResponse(any(Event.class));
+    }
+
+    @Test
+    void findByCode_draftEventForOperator_returnsDto() {
+
+        Event event = createEvent("DRAFT-2026", EventStatus.DRAFT);
+        EventResponse expected = response(event);
+
+        when(eventRepository.findByEventCode("DRAFT-2026"))
+                .thenReturn(Optional.of(event));
+
+        when(authorizationService.isOperator())
+                .thenReturn(true);
+
+        when(eventMapper.toResponse(event))
+                .thenReturn(expected);
+
+        assertThat(eventService.findByCode("DRAFT-2026"))
+                .isEqualTo(expected);
+    }
+
+    @Test
+    void findPublishedEvents_includesSoldOutEvents() {
+
+        Event published = createEvent("PUB-2026", EventStatus.PUBLISHED);
+        Event soldOut = createEvent("SOLD-2026", EventStatus.SOLD_OUT);
+
+        when(eventRepository.findByStatusInOrderByEventDateAsc(
+                Set.of(EventStatus.PUBLISHED, EventStatus.SOLD_OUT)))
+                .thenReturn(List.of(published, soldOut));
+
+        assertThat(eventService.findPublishedEvents())
+                .hasSize(2);
+
+        verify(eventMapper)
+                .toSummary(soldOut);
+    }
+
+    @Test
+    void findByArtist_publicSeesPublishedAndSoldOutOnly() {
+
+        Event published = createEvent("PUB-2026", EventStatus.PUBLISHED);
+        Event soldOut = createEvent("SOLD-2026", EventStatus.SOLD_OUT);
+        Event draft = createEvent("DRAFT-2026", EventStatus.DRAFT);
+
+        when(eventRepository.findEventsByArtistStageName("Sol"))
+                .thenReturn(List.of(published, soldOut, draft));
+
+        when(authorizationService.isOperator())
+                .thenReturn(false);
+
+        assertThat(eventService.findByArtist("Sol"))
+                .hasSize(2);
+
+        verify(eventMapper, never())
+                .toSummary(draft);
     }
 
     @Test
@@ -323,6 +417,37 @@ class EventServiceImplTest {
 
         verify(eventRepository, never())
                 .save(any(Event.class));
+    }
+
+    private Event createEvent(String eventCode, EventStatus status) {
+
+        return new Event(
+                eventCode,
+                "Caribbean Music Fest",
+                "Music festival",
+                EventCategory.MUSIC,
+                status,
+                LocalDateTime.now().plusMonths(2),
+                18,
+                createActiveVenue()
+        );
+    }
+
+    private EventResponse response(Event event) {
+
+        return new EventResponse(
+                null,
+                event.getEventCode(),
+                event.getName(),
+                event.getDescription(),
+                event.getCategory(),
+                event.getStatus(),
+                event.getEventDate(),
+                event.getMinimumAge(),
+                "VEN-SMR-01",
+                "Marina Convention Center",
+                null
+        );
     }
 
     private Venue createActiveVenue() {

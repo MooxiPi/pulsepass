@@ -1,4 +1,3 @@
-
 package com.pulsepass.dto.request;
 
 import com.pulsepass.domain.enums.EventCategory;
@@ -13,11 +12,11 @@ import java.time.LocalDateTime;
 public record CreateEventRequest(
 
         @NotBlank(message = "Event code is required")
-        @Size(max = 80)
+        @Size(max = 80, message = "Event code must be at most 80 characters")
         String eventCode,
 
         @NotBlank(message = "Event name is required")
-        @Size(max = 180)
+        @Size(max = 180, message = "Event name must be at most 180 characters")
         String name,
 
         String description,
@@ -33,6 +32,7 @@ public record CreateEventRequest(
         Integer minimumAge,
 
         @NotBlank(message = "Venue code is required")
+        @Size(max = 50, message = "Venue code must be at most 50 characters")
         String venueCode
 ) {
 }

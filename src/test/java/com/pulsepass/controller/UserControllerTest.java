@@ -94,6 +94,45 @@ class UserControllerTest {
     }
 
     @Test
+    void register_blankUsername_reportsOnlyRequiredMessage() throws Exception {
+        mockMvc.perform(post("/api/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(VALID_REQUEST.replace("\"carlos123\"", "\"\"")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.details.username").value("Username is required"));
+
+        verifyNoInteractions(userService);
+    }
+
+    @Test
+    void register_tooLongUsername_returns400InsteadOf409() throws Exception {
+        String longUsername = "u".repeat(81);
+
+        mockMvc.perform(post("/api/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(VALID_REQUEST.replace("carlos123", longUsername)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.details.username")
+                        .value("Username must be at most 80 characters"));
+
+        verifyNoInteractions(userService);
+    }
+
+    @Test
+    void register_fieldWithSeveralViolations_reportsAllSorted() throws Exception {
+        String longUsernameWithAt = "@".repeat(81);
+
+        mockMvc.perform(post("/api/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(VALID_REQUEST.replace("carlos123", longUsernameWithAt)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.details.username").value(
+                        "Username must be at most 80 characters; Username must not contain @"));
+
+        verifyNoInteractions(userService);
+    }
+
+    @Test
     void register_duplicateUsername_returns409() throws Exception {
         when(userService.register(any(RegisterUserRequest.class)))
                 .thenThrow(new DuplicateResourceException("Username already exists: carlos123"));

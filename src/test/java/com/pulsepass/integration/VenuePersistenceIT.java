@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Transactional
-class VenuePersistenceTest extends PostgresIntegrationTest {
+class VenuePersistenceIT extends PostgresIntegrationTest {
 
     @Autowired
     VenueRepository venueRepository;

@@ -17,6 +17,7 @@ import com.pulsepass.repository.TicketRepository;
 import com.pulsepass.repository.UserProfileRepository;
 import com.pulsepass.repository.UserRepository;
 import com.pulsepass.service.TicketService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,7 +54,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     @Transactional
-    @org.springframework.security.access.prepost.PreAuthorize("hasRole('USER') and @authorizationService.email(#request.userEmail())")
+    @PreAuthorize("hasRole('USER') and @authorizationService.email(#request.userEmail())")
     public TicketResponse purchase(PurchaseTicketRequest request) {
 
         User user = userRepository
@@ -148,7 +149,7 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('STAFF','ADMIN') or @authorizationService.ticket(#ticketCode)")
+    @PreAuthorize("hasAnyRole('STAFF','ADMIN') or @authorizationService.ticket(#ticketCode)")
     public TicketResponse findByCode(String ticketCode) {
 
         Ticket ticket = findTicketOrThrow(ticketCode);
@@ -157,7 +158,7 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN') or @authorizationService.email(#email)")
+    @PreAuthorize("hasRole('ADMIN') or @authorizationService.email(#email)")
     public List<TicketResponse> findByUserEmail(String email) {
 
         return ticketRepository
@@ -173,7 +174,7 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('STAFF','ADMIN')")
+    @PreAuthorize("hasAnyRole('STAFF','ADMIN')")
     public List<TicketResponse> findPaidTicketsByEvent(
             String eventCode
     ) {
@@ -190,7 +191,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     @Transactional
-    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN') or (hasRole('USER') and @authorizationService.ticket(#ticketCode))")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('USER') and @authorizationService.ticket(#ticketCode))")
     public TicketResponse cancel(String ticketCode) {
 
         Ticket ticket = findTicketOrThrow(ticketCode);
@@ -215,12 +216,14 @@ public class TicketServiceImpl implements TicketService {
         Ticket savedTicket =
                 ticketRepository.save(ticket);
 
+        reopenSalesIfCapacityFreed(ticket.getEvent());
+
         return ticketMapper.toResponse(savedTicket);
     }
 
     @Override
     @Transactional
-    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('STAFF','ADMIN')")
+    @PreAuthorize("hasAnyRole('STAFF','ADMIN')")
     public TicketResponse markAsUsed(String ticketCode) {
 
         Ticket ticket = findTicketOrThrow(ticketCode);
@@ -237,6 +240,27 @@ public class TicketServiceImpl implements TicketService {
                 ticketRepository.save(ticket);
 
         return ticketMapper.toResponse(savedTicket);
+    }
+
+    /**
+     * Si la cancelación libera aforo en un evento SOLD_OUT, el evento vuelve a PUBLISHED
+     * para que el cupo se pueda vender de nuevo.
+     */
+    private void reopenSalesIfCapacityFreed(Event event) {
+
+        if (event.getStatus() != EventStatus.SOLD_OUT) {
+            return;
+        }
+
+        long paidTickets =
+                ticketRepository.countPaidTicketsByEventCode(
+                        event.getEventCode()
+                );
+
+        if (paidTickets < event.getVenue().getCapacity()) {
+            event.setStatus(EventStatus.PUBLISHED);
+            eventRepository.save(event);
+        }
     }
 
     private Ticket findTicketOrThrow(String ticketCode) {

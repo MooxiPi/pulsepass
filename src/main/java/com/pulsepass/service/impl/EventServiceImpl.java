@@ -14,38 +14,51 @@ import com.pulsepass.mapper.EventMapper;
 import com.pulsepass.repository.ArtistRepository;
 import com.pulsepass.repository.EventRepository;
 import com.pulsepass.repository.VenueRepository;
+import com.pulsepass.security.AuthorizationService;
 import com.pulsepass.service.EventService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Service
 @Transactional(readOnly = true)
 public class EventServiceImpl implements EventService {
 
+    /**
+     * Estados visibles para cualquier visitante. Un evento SOLD_OUT sigue publicado: se muestra
+     * en la cartelera y en su detalle, pero la compra la rechaza TicketService por aforo.
+     */
+    private static final Set<EventStatus> PUBLIC_STATUSES =
+            Set.of(EventStatus.PUBLISHED, EventStatus.SOLD_OUT);
+
     private final EventRepository eventRepository;
     private final VenueRepository venueRepository;
     private final ArtistRepository artistRepository;
     private final EventMapper eventMapper;
+    private final AuthorizationService authorizationService;
 
     public EventServiceImpl(
             EventRepository eventRepository,
             VenueRepository venueRepository,
             ArtistRepository artistRepository,
-            EventMapper eventMapper
+            EventMapper eventMapper,
+            AuthorizationService authorizationService
     ) {
         this.eventRepository = eventRepository;
         this.venueRepository = venueRepository;
         this.artistRepository = artistRepository;
         this.eventMapper = eventMapper;
+        this.authorizationService = authorizationService;
     }
 
     @Override
     @Transactional
-    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public EventResponse create(CreateEventRequest request) {
 
         if (eventRepository.existsByEventCode(request.eventCode())) {
@@ -104,8 +117,12 @@ public class EventServiceImpl implements EventService {
 
         Event event = findEventOrThrow(eventCode);
 
-        if (event.getStatus() != EventStatus.PUBLISHED && !com.pulsepass.service.AuthorizationService.operator())
+        // Los no publicados (DRAFT, CANCELLED, FINISHED) solo los ve STAFF/ADMIN;
+        // al resto se le responde 404 para no revelar que existen.
+        if (!isVisible(event)) {
             throw new ResourceNotFoundException("Event not found");
+        }
+
         return eventMapper.toResponse(event);
     }
 
@@ -113,7 +130,7 @@ public class EventServiceImpl implements EventService {
     public List<EventSummaryResponse> findPublishedEvents() {
 
         return eventRepository
-                .findByStatusOrderByEventDateAsc(EventStatus.PUBLISHED)
+                .findByStatusInOrderByEventDateAsc(PUBLIC_STATUSES)
                 .stream()
                 .map(eventMapper::toSummary)
                 .toList();
@@ -121,7 +138,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public EventResponse publish(String eventCode) {
 
         Event event = findEventOrThrow(eventCode);
@@ -155,7 +172,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public EventResponse addArtist(
             String eventCode,
             Long artistId
@@ -205,9 +222,15 @@ public class EventServiceImpl implements EventService {
         return eventRepository
                 .findEventsByArtistStageName(stageName)
                 .stream()
-                .filter(e -> e.getStatus() == EventStatus.PUBLISHED || com.pulsepass.service.AuthorizationService.operator())
+                .filter(this::isVisible)
                 .map(eventMapper::toSummary)
                 .toList();
+    }
+
+    private boolean isVisible(Event event) {
+
+        return PUBLIC_STATUSES.contains(event.getStatus())
+                || authorizationService.isOperator();
     }
 
     private Event findEventOrThrow(String eventCode) {
