@@ -78,6 +78,14 @@ public class TicketServiceImpl implements TicketService {
                         )
                 );
 
+        if (event.getStatus() == EventStatus.SOLD_OUT
+                && ticketRepository.countPaidTicketsByEventCode(event.getEventCode())
+                        >= event.getVenue().getCapacity()) {
+            throw new BusinessRuleException(
+                    "Event has no available capacity."
+            );
+        }
+
         if (event.getStatus() != EventStatus.PUBLISHED) {
             throw new BusinessRuleException(
                     "Tickets can only be purchased for published events."

@@ -42,52 +42,52 @@ Ejecutar cada caso con Send, en este orden; no usar Runner. Preparar fixtures y 
 - [x] E2E-TKT-02: Consultar ticket propio — userA, HTTP 200.
 - [x] E2E-TKT-03: Tickets propios — userA, HTTP 200.
 - [x] E2E-TKT-04: Tickets pagados como STAFF — staff, HTTP 200.
-- [ ] NOAUTH-06: Sin Bearer /api/tickets — ANONYMOUS, HTTP 401.
-- [ ] NOAUTH-07: Sin Bearer /api/tickets/{{ticketCancelableCode}} — ANONYMOUS, HTTP 401.
-- [ ] NOAUTH-08: Sin Bearer /api/tickets/by-user?email={{userAEmail}} — ANONYMOUS, HTTP 401.
-- [ ] NOAUTH-09: Sin Bearer /api/events/{{publishedEventCode}}/tickets/paid — ANONYMOUS, HTTP 401.
-- [ ] NOAUTH-10: Sin Bearer /api/tickets/{{ticketCancelableCode}}/cancel — ANONYMOUS, HTTP 401.
-- [ ] NOAUTH-11: Sin Bearer /api/tickets/{{ticketUsableCode}}/use — ANONYMOUS, HTTP 401.
-- [ ] TC-SEC-008: Permiso denegado 008 — userA, HTTP 403.
-- [ ] TC-SEC-009: Permiso denegado 009 — userB, HTTP 403.
-- [ ] TC-SEC-010: Permiso denegado 010 — userB, HTTP 403.
-- [ ] TC-SEC-011: Permiso denegado 011 — userB, HTTP 403.
-- [ ] TC-SEC-012: Permiso denegado 012 — userB, HTTP 403.
-- [ ] TC-SEC-013: Permiso denegado 013 — userA, HTTP 403.
-- [ ] E2E-TKT-05: Cancelar ticket propio — userA, HTTP 200.
-- [ ] E2E-TKT-06: Marcar segundo ticket usado — staff, HTTP 200.
-- [ ] VERIFY-USED: Consultar ticket usado — userA, HTTP 200.
-- [ ] TC-AUTH-004: Login rechazado 004 — ANONYMOUS, HTTP 401.
-- [ ] TC-AUTH-005: Login rechazado 005 — ANONYMOUS, HTTP 401.
-- [ ] NOAUTH-01: Sin Bearer /api/events — ANONYMOUS, HTTP 401.
-- [ ] NOAUTH-02: Sin Bearer /api/events/{{draftEventCode}}/publish — ANONYMOUS, HTTP 401.
-- [ ] NOAUTH-03: Sin Bearer /api/events/{{draftEventCode}}/artists/{{artistId}} — ANONYMOUS, HTTP 401.
-- [ ] NOAUTH-04: Sin Bearer /api/users/by-email?email={{userAEmail}} — ANONYMOUS, HTTP 401.
-- [ ] NOAUTH-05: Sin Bearer /api/users/by-username?username={{userAUsername}} — ANONYMOUS, HTTP 401.
-- [ ] NOAUTH-12: Sin Bearer /api/auth/me — ANONYMOUS, HTTP 401.
-- [ ] TC-SEC-006: Permiso denegado 006 — userB, HTTP 403.
-- [ ] TC-SEC-007: Permiso denegado 007 — userB, HTTP 403.
-- [ ] TC-SEC-016: Inyección de rol ignorada — ANONYMOUS, HTTP 201.
-- [ ] TC-AUTH-008: JWT rechazado malformed — malformed, HTTP 401.
-- [ ] TC-AUTH-009: JWT rechazado tampered — tampered, HTTP 401.
-- [ ] TC-AUTH-010: JWT rechazado expired — expired, HTTP 401.
-- [ ] TC-AUTH-011-KEY: JWT rechazado wrongKey — wrongKey, HTTP 401.
-- [ ] TC-AUTH-011-ISSUER: JWT rechazado wrongIssuer — wrongIssuer, HTTP 401.
-- [ ] TC-AUTH-012: Token en query no autentica — ANONYMOUS, HTTP 401.
-- [ ] TC-AUTH-015: JWT inválido en ruta pública — malformed, HTTP 401.
-- [ ] TC-AUTH-013: Cuenta desactivada después de login — userB, HTTP 401.
-- [ ] TC-HTTP-400-REQUIRED: 400-REQUIRED — ANONYMOUS, HTTP 400.
-- [ ] TC-HTTP-400-EMAIL: 400-EMAIL — ANONYMOUS, HTTP 400.
-- [ ] TC-HTTP-400-JSON: 400-JSON — ANONYMOUS, HTTP 400.
-- [ ] TC-HTTP-400-ENUM: 400-ENUM — userA, HTTP 400.
-- [ ] TC-HTTP-400-PASSWORD: 400-PASSWORD — ANONYMOUS, HTTP 400.
-- [ ] TC-HTTP-404-VENUE: 404-VENUE — ANONYMOUS, HTTP 404.
-- [ ] TC-HTTP-404-ARTIST: 404-ARTIST — ANONYMOUS, HTTP 404.
-- [ ] TC-HTTP-409-USER: 409-USER — ANONYMOUS, HTTP 409.
-- [ ] TC-HTTP-409-CANCEL: 409-CANCEL — userA, HTTP 409.
-- [ ] TC-HTTP-409-USE: 409-USE — staff, HTTP 409.
-- [ ] TC-SEC-017: Rol STAFF revocado — staff, HTTP 403.
-- [ ] TC-HTTP-409-DRAFT: 409-DRAFT — userA, HTTP 409.
-- [ ] TC-HTTP-409-CAPACITY: 409-CAPACITY — userA, HTTP 409.
-- [ ] TC-HTTP-409-AGE: 409-AGE — userA, HTTP 409.
-- [ ] FLOW-FINAL: Revisión final de tickets — userA, HTTP 200.
+- [x] NOAUTH-06: Sin Bearer /api/tickets — ANONYMOUS, HTTP 401.
+- [x] NOAUTH-07: Sin Bearer /api/tickets/{{ticketCancelableCode}} — ANONYMOUS, HTTP 401.
+- [x] NOAUTH-08: Sin Bearer /api/tickets/by-user?email={{userAEmail}} — ANONYMOUS, HTTP 401.
+- [x] NOAUTH-09: Sin Bearer /api/events/{{publishedEventCode}}/tickets/paid — ANONYMOUS, HTTP 401.
+- [x] NOAUTH-10: Sin Bearer /api/tickets/{{ticketCancelableCode}}/cancel — ANONYMOUS, HTTP 401.
+- [x] NOAUTH-11: Sin Bearer /api/tickets/{{ticketUsableCode}}/use — ANONYMOUS, HTTP 401.
+- [x] TC-SEC-008: Permiso denegado 008 — userA, HTTP 403.
+- [x] TC-SEC-009: Permiso denegado 009 — userB, HTTP 403.
+- [x] TC-SEC-010: Permiso denegado 010 — userB, HTTP 403.
+- [x] TC-SEC-011: Permiso denegado 011 — userB, HTTP 403.
+- [x] TC-SEC-012: Permiso denegado 012 — userB, HTTP 403.
+- [x] TC-SEC-013: Permiso denegado 013 — userA, HTTP 403.
+- [x] E2E-TKT-05: Cancelar ticket propio — userA, HTTP 200.
+- [x] E2E-TKT-06: Marcar segundo ticket usado — staff, HTTP 200.
+- [x] VERIFY-USED: Consultar ticket usado — userA, HTTP 200.
+- [x] TC-AUTH-004: Login rechazado 004 — ANONYMOUS, HTTP 401.
+- [x] TC-AUTH-005: Login rechazado 005 — ANONYMOUS, HTTP 401.
+- [x] NOAUTH-01: Sin Bearer /api/events — ANONYMOUS, HTTP 401.
+- [x] NOAUTH-02: Sin Bearer /api/events/{{draftEventCode}}/publish — ANONYMOUS, HTTP 401.
+- [x] NOAUTH-03: Sin Bearer /api/events/{{draftEventCode}}/artists/{{artistId}} — ANONYMOUS, HTTP 401.
+- [x] NOAUTH-04: Sin Bearer /api/users/by-email?email={{userAEmail}} — ANONYMOUS, HTTP 401.
+- [x] NOAUTH-05: Sin Bearer /api/users/by-username?username={{userAUsername}} — ANONYMOUS, HTTP 401.
+- [x] NOAUTH-12: Sin Bearer /api/auth/me — ANONYMOUS, HTTP 401.
+- [x] TC-SEC-006: Permiso denegado 006 — userB, HTTP 403.
+- [x] TC-SEC-007: Permiso denegado 007 — userB, HTTP 403.
+- [x] TC-SEC-016: Inyección de rol ignorada — ANONYMOUS, HTTP 201.
+- [x] TC-AUTH-008: JWT rechazado malformed — malformed, HTTP 401.
+- [x] TC-AUTH-009: JWT rechazado tampered — tampered, HTTP 401.
+- [x] TC-AUTH-010: JWT rechazado expired — expired, HTTP 401.
+- [x] TC-AUTH-011-KEY: JWT rechazado wrongKey — wrongKey, HTTP 401.
+- [x] TC-AUTH-011-ISSUER: JWT rechazado wrongIssuer — wrongIssuer, HTTP 401.
+- [x] TC-AUTH-012: Token en query no autentica — ANONYMOUS, HTTP 401.
+- [x] TC-AUTH-015: JWT inválido en ruta pública — malformed, HTTP 401.
+- [x] TC-AUTH-013: Cuenta desactivada después de login — userB, HTTP 401.
+- [x] TC-HTTP-400-REQUIRED: 400-REQUIRED — ANONYMOUS, HTTP 400.
+- [x] TC-HTTP-400-EMAIL: 400-EMAIL — ANONYMOUS, HTTP 400.
+- [x] TC-HTTP-400-JSON: 400-JSON — ANONYMOUS, HTTP 400.
+- [x] TC-HTTP-400-ENUM: 400-ENUM — userA, HTTP 400.
+- [x] TC-HTTP-400-PASSWORD: 400-PASSWORD — ANONYMOUS, HTTP 400.
+- [x] TC-HTTP-404-VENUE: 404-VENUE — ANONYMOUS, HTTP 404.
+- [x] TC-HTTP-404-ARTIST: 404-ARTIST — ANONYMOUS, HTTP 404.
+- [x] TC-HTTP-409-USER: 409-USER — ANONYMOUS, HTTP 409.
+- [x] TC-HTTP-409-CANCEL: 409-CANCEL — userA, HTTP 409.
+- [x] TC-HTTP-409-USE: 409-USE — staff, HTTP 409.
+- [x] TC-SEC-017: Rol STAFF revocado — staff, HTTP 403.
+- [x] TC-HTTP-409-DRAFT: 409-DRAFT — userA, HTTP 409.
+- [x] TC-HTTP-409-CAPACITY: 409-CAPACITY — userA, HTTP 409.
+- [x] TC-HTTP-409-AGE: 409-AGE — userA, HTTP 409.
+- [x] FLOW-FINAL: Revisión final de tickets — userA, HTTP 200.

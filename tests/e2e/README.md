@@ -6,8 +6,8 @@ La colección no contiene scripts, event, pm.test ni captura automática. Cada s
 1. Usar Java 21 y Maven. Arrancar PostgreSQL en una base exclusiva `pulsepass_e2e`. Nunca usar datos reales. Docker/Testcontainers es opcional para las pruebas si se configura la base local aislada.
 2. Configurar `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `PULSEPASS_JWT_SECRET_BASE64` y ejecutar `mvn spring-boot:run`. Generar el secreto con 32 bytes aleatorios; no usar la clave de pruebas de src/test. La aplicación falla si falta el secreto.
 3. Aplicar los fixtures de fixtures/README.md después de Flyway. Elegir runId alfanumérico nuevo para cada ejecución. No borrar la base de uso habitual.
-4. Importar los dos JSON de postman/ en Postman Desktop y seleccionar PulsePass-local. Cambiar baseUrl si el puerto es distinto.
-5. Completar variables de usuarios, credenciales y fixtures localmente. Los JSON compartidos dejan contraseñas y tokens vacíos. Copiar artistId desde GET /artists/active; no asumir ID 1.
+4. En Postman Desktop Local Mode abrir la colección v3 YAML de `../../postman/collections/PulsePass` y crear un entorno privado desde `../../postman/environments/PulsePass-template.environment.yaml`. Como alternativa, importar la colección y el entorno plantilla v2.1 JSON de `postman/`. Seleccionar el entorno y cambiar baseUrl si el puerto es distinto.
+5. Completar variables de usuarios, credenciales y fixtures localmente. Las plantillas compartidas dejan contraseñas y tokens vacíos. Copiar artistId desde GET /artists/active; no asumir ID 1. No sincronizar el entorno privado con Postman Cloud.
 
 El registro exige usernames sin `@`. Además, el email nuevo no puede coincidir, ignorando mayúsculas, con el username de una cuenta legada; así el login por username o email conserva un identificador inequívoco. Elegir los valores de `runId`, `userAUsername`, `userBUsername` y correos de forma consistente antes de registrar.
 

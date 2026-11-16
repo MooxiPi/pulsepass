@@ -4,7 +4,7 @@ Ejecutar seed-e2e.sql desde psql conectado a pulsepass_e2e, después de arrancar
 
 En psql usar `\set runId manual01` y `\prompt -s 'Password ADMIN: ' adminPassword`, repetir para staffPassword e inactivePassword. Usar frases únicas de al menos 12 caracteres y máximo 72 bytes. Después `\i tests/e2e/fixtures/seed-e2e.sql`. No poner passwords en argumentos de terminal ni archivos compartidos. Pegar los mismos valores en variables locales Postman. A y B se registran por HTTP.
 
-El seed crea venue, artista, tres cuentas y cuatro eventos. Copiar el ID real de artista desde GET /artists/active. newEventCode y eventToPublishCode usan runId-new, que no existe hasta crear por HTTP. Las fechas del seed son futuras en cada ejecución.
+El seed crea dos venues (el de aforo 1 está inactivo y no aparece en el catálogo activo), un artista, tres cuentas, cuatro eventos y un ticket PAID de ADMIN en el evento SOLD_OUT. Así ese evento está lleno 1/1 y la prueba de aforo llega a la validación de capacidad sin agregar tickets a USER_A. Copiar el ID real de artista desde GET /artists/active. newEventCode y eventToPublishCode usan runId-new, que no existe hasta crear por HTTP. Las fechas del seed son futuras en cada ejecución.
 
 Prueba de inactividad: con token B guardado, en esta base ejecutar `UPDATE users SET active=false WHERE username=:'runId'||'-b';`; probar /auth/me 401 y login 401. Restaurar active=true con el mismo predicado.
 

@@ -170,10 +170,13 @@ class TicketServiceImplTest {
         assertThatThrownBy(() ->
                 ticketService.purchase(request)
         )
-                .isInstanceOf(BusinessRuleException.class);
+                .isInstanceOf(BusinessRuleException.class)
+                .hasMessage("Tickets can only be purchased for published events.");
 
         verify(ticketRepository, never())
                 .save(any(Ticket.class));
+        verify(ticketRepository, never())
+                .countPaidTicketsByEventCode(any());
     }
 
     @Test
@@ -244,10 +247,13 @@ class TicketServiceImplTest {
         assertThatThrownBy(() ->
                 ticketService.purchase(request)
         )
-                .isInstanceOf(BusinessRuleException.class);
+                .isInstanceOf(BusinessRuleException.class)
+                .hasMessage("User does not meet minimum age.");
 
         verify(ticketRepository, never())
                 .save(any(Ticket.class));
+        verify(ticketRepository, never())
+                .countPaidTicketsByEventCode(any());
     }
 
     @Test
@@ -279,6 +285,52 @@ class TicketServiceImplTest {
 
         verify(ticketRepository, never())
                 .save(any(Ticket.class));
+    }
+
+    @Test
+    void purchase_soldOutEventAtCapacity_reportsCapacityAndDoesNotSave() {
+        User user = createUser(true);
+        Event event = createEvent(EventStatus.SOLD_OUT, 0, 1);
+        PurchaseTicketRequest request = new PurchaseTicketRequest(
+                "andrea@email.com", "CMF-2026", TicketType.GENERAL
+        );
+
+        when(userRepository.findByEmailIgnoreCase("andrea@email.com"))
+                .thenReturn(Optional.of(user));
+        when(eventRepository.findByEventCode("CMF-2026"))
+                .thenReturn(Optional.of(event));
+        when(ticketRepository.countPaidTicketsByEventCode("CMF-2026"))
+                .thenReturn(1L);
+
+        assertThatThrownBy(() -> ticketService.purchase(request))
+                .isInstanceOf(BusinessRuleException.class)
+                .hasMessage("Event has no available capacity.");
+
+        verify(ticketRepository).countPaidTicketsByEventCode("CMF-2026");
+        verify(ticketRepository, never()).save(any(Ticket.class));
+        verify(eventRepository, never()).save(any(Event.class));
+    }
+
+    @Test
+    void purchase_soldOutEventBelowCapacity_keepsStatusRejection() {
+        User user = createUser(true);
+        Event event = createEvent(EventStatus.SOLD_OUT, 0, 1);
+        PurchaseTicketRequest request = new PurchaseTicketRequest(
+                "andrea@email.com", "CMF-2026", TicketType.GENERAL
+        );
+
+        when(userRepository.findByEmailIgnoreCase("andrea@email.com"))
+                .thenReturn(Optional.of(user));
+        when(eventRepository.findByEventCode("CMF-2026"))
+                .thenReturn(Optional.of(event));
+        when(ticketRepository.countPaidTicketsByEventCode("CMF-2026"))
+                .thenReturn(0L);
+
+        assertThatThrownBy(() -> ticketService.purchase(request))
+                .isInstanceOf(BusinessRuleException.class)
+                .hasMessage("Tickets can only be purchased for published events.");
+
+        verify(ticketRepository, never()).save(any(Ticket.class));
     }
 
     @Test

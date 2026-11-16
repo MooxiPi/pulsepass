@@ -23,4 +23,14 @@ WHERE v.code=:'runId'||'-venue';
 INSERT INTO event_artists(event_id,artist_id)
 SELECT e.id,a.id FROM events e JOIN venues v ON v.id=e.venue_id CROSS JOIN artists a
 WHERE v.code=:'runId'||'-venue' AND a.stage_name=:'runId'||'-artist';
+-- Keep the SOLD_OUT fixture at 1/1 so a repeat purchase exercises the capacity guard.
+-- Its separate inactive venue leaves the active venue catalogue unchanged.
+INSERT INTO venues(code,name,city,address,capacity,active)
+VALUES (:'runId'||'-full-venue','Venue aforo E2E','Santa Marta','Laboratorio',1,false);
+UPDATE events SET venue_id=(SELECT id FROM venues WHERE code=:'runId'||'-full-venue')
+WHERE event_code=:'runId'||'-full';
+INSERT INTO tickets(ticket_code,type,price,status,purchase_date,user_id,event_id)
+SELECT 'E2E-'||:'runId'||'-full-seat','GENERAL',120000,'PAID',localtimestamp,u.id,e.id
+FROM users u CROSS JOIN events e
+WHERE u.username=:'runId'||'-admin' AND e.event_code=:'runId'||'-full';
 COMMIT;
