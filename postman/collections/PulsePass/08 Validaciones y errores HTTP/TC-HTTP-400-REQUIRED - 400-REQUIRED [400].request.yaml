@@ -1,0 +1,22 @@
+$kind: http-request
+name: TC-HTTP-400-REQUIRED | 400-REQUIRED [400]
+description: |-
+  ID: TC-HTTP-400-REQUIRED
+  Objetivo: 400-REQUIRED
+  Precondiciones: username ausente en registro; usar correo único y password local válido.
+  Actor: ANONYMOUS
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 400
+  Revisión manual: ErrorResponse con timestamp, status, error, message y details; sin secretos.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/users"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+body:
+  type: json
+  content: "{}"
+auth:
+  type: noauth
+order: 1000

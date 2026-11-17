@@ -1,0 +1,26 @@
+$kind: http-request
+name: TC-AUTH-005 | Login rechazado 005 [401]
+description: |-
+  ID: TC-AUTH-005
+  Objetivo: Login rechazado 005
+  Precondiciones: Identificador inexistente en pulsepass_e2e; contraseña de prueba local.
+  Actor: ANONYMOUS
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 401
+  Revisión manual: Mismo mensaje genérico en ambos casos; no enumeración.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/auth/login"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "identifier": "missing-{{runId}}",
+      "password": "WrongPassword2026!"
+    }
+auth:
+  type: noauth
+order: 2000

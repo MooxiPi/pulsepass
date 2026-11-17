@@ -1,0 +1,4 @@
+$kind: collection
+name: 06 Tickets / compra, consulta y ciclo de vida
+description: Después de las compras y consultas iniciales, pasar a la carpeta 07 para NOAUTH-06..11 y TC-SEC-008..013 mientras ambos tickets siguen PAID. Luego volver aquí y ejecutar E2E-TKT-05/06; verificar estados con GET.
+order: 7000

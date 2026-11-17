@@ -1,0 +1,18 @@
+$kind: http-request
+name: NOAUTH-02 | Sin Bearer /api/events/{{draftEventCode}}/publish [401]
+description: |-
+  ID: NOAUTH-02
+  Objetivo: Sin Bearer /api/events/{{draftEventCode}}/publish
+  Precondiciones: draftEventCode existe en DRAFT; no enviar Authorization.
+  Actor: ANONYMOUS
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 401
+  Revisión manual: ErrorResponse con timestamp, status, error, message y details; sin secretos.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/events/{{draftEventCode}}/publish"
+method: PATCH
+headers:
+  Accept: application/json
+auth:
+  type: noauth
+order: 4000

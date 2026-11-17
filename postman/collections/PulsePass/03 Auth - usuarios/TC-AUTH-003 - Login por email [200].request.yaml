@@ -1,0 +1,26 @@
+$kind: http-request
+name: TC-AUTH-003 | Login por email [200]
+description: |-
+  ID: TC-AUTH-003
+  Objetivo: Login por email
+  Precondiciones: USER_A registrado y activo; iniciar sesión con userAEmail y userAPassword.
+  Actor: ANONYMOUS
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 200
+  Revisión manual: 200; mismo sub/userId que login por username.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/auth/login"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "identifier": "{{userAEmail}}",
+      "password": "{{userAPassword}}"
+    }
+auth:
+  type: noauth
+order: 12000

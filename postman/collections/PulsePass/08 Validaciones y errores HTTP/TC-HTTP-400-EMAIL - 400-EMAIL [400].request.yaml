@@ -1,0 +1,32 @@
+$kind: http-request
+name: TC-HTTP-400-EMAIL | 400-EMAIL [400]
+description: |-
+  ID: TC-HTTP-400-EMAIL
+  Objetivo: 400-EMAIL
+  Precondiciones: Correo deliberadamente mal formado; resto del registro válido.
+  Actor: ANONYMOUS
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 400
+  Revisión manual: ErrorResponse con timestamp, status, error, message y details; sin secretos.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/users"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "username": "{{userAUsername}}",
+      "email": "invalid",
+      "firstName": "Andrea",
+      "lastName": "Pruebas",
+      "phone": "3000000000",
+      "city": "Santa Marta",
+      "birthDate": "1998-05-15",
+      "password": "{{userAPassword}}"
+    }
+auth:
+  type: noauth
+order: 2000

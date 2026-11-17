@@ -1,0 +1,18 @@
+$kind: http-request
+name: TC-SEC-005 | Sin borradores por artista [200]
+description: |-
+  ID: TC-SEC-005
+  Objetivo: Sin borradores por artista
+  Precondiciones: Artista del seed asociado a evento DRAFT y publicado; enviar sin Authorization.
+  Actor: ANONYMOUS
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 200
+  Revisión manual: Ningún elemento con draftEventCode; todos PUBLISHED.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/events/by-artist?stageName={{artistStageName}}"
+method: GET
+headers:
+  Accept: application/json
+auth:
+  type: noauth
+order: 28000

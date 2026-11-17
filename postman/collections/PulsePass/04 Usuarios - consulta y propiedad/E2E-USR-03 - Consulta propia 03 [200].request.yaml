@@ -1,0 +1,20 @@
+$kind: http-request
+name: E2E-USR-03 | Consulta propia 03 [200]
+description: |-
+  ID: E2E-USR-03
+  Objetivo: Consulta propia 03
+  Precondiciones: USER_A registrado; userAToken vigente y userAUsername propio.
+  Actor: userA
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 200
+  Revisión manual: Datos de A coinciden con registro. Sin credenciales.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/users/by-username?username={{userAUsername}}"
+method: GET
+headers:
+  Accept: application/json
+auth:
+  type: bearer
+  credentials:
+    token: "{{userAToken}}"
+order: 2000

@@ -1,0 +1,18 @@
+$kind: http-request
+name: NOAUTH-11 | Sin Bearer /api/tickets/{{ticketUsableCode}}/use [401]
+description: |-
+  ID: NOAUTH-11
+  Objetivo: Sin Bearer /api/tickets/{{ticketUsableCode}}/use
+  Precondiciones: ticketUsableCode propio de USER_A aún PAID; no enviar Authorization antes de usar.
+  Actor: ANONYMOUS
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 401
+  Revisión manual: ErrorResponse con timestamp, status, error, message y details; sin secretos.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/tickets/{{ticketUsableCode}}/use"
+method: PATCH
+headers:
+  Accept: application/json
+auth:
+  type: noauth
+order: 13000

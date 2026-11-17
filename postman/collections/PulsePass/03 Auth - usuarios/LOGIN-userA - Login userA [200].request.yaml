@@ -1,0 +1,26 @@
+$kind: http-request
+name: LOGIN-userA | Login userA [200]
+description: |-
+  ID: LOGIN-userA
+  Objetivo: Login userA
+  Precondiciones: USER_A registrado y activo; userAPassword local disponible.
+  Actor: ANONYMOUS
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 200
+  Revisión manual: tokenType=Bearer; expiresIn=900; copiar accessToken a userAToken LOCAL. No exportarlo.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/auth/login"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "identifier": "{{userAUsername}}",
+      "password": "{{userAPassword}}"
+    }
+auth:
+  type: noauth
+order: 3000

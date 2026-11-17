@@ -1,0 +1,20 @@
+$kind: http-request
+name: TC-SEC-012 | Permiso denegado 012 [403]
+description: |-
+  ID: TC-SEC-012
+  Objetivo: Permiso denegado 012
+  Precondiciones: ticketUsableCode propio de A aún PAID; userBToken vigente; ejecutar antes del uso por STAFF y releer como A.
+  Actor: userB
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 403
+  Revisión manual: 403 + ErrorResponse; USER_A confirma que ticketUsableCode sigue PAID.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/tickets/{{ticketUsableCode}}/use"
+method: PATCH
+headers:
+  Accept: application/json
+auth:
+  type: bearer
+  credentials:
+    token: "{{userBToken}}"
+order: 25000

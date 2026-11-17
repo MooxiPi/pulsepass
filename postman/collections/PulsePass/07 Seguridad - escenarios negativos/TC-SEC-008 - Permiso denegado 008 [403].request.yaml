@@ -1,0 +1,29 @@
+$kind: http-request
+name: TC-SEC-008 | Permiso denegado 008 [403]
+description: |-
+  ID: TC-SEC-008
+  Objetivo: Permiso denegado 008
+  Precondiciones: USER_A y USER_B activos; userAToken vigente; evento publicado elegible; registrar lista de tickets de B antes y después.
+  Actor: userA
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 403
+  Revisión manual: 403 + ErrorResponse; lista de tickets de USER_B sin ticket nuevo.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/tickets"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "userEmail": "{{userBEmail}}",
+      "eventCode": "{{publishedEventCode}}",
+      "type": "GENERAL"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{userAToken}}"
+order: 21000
