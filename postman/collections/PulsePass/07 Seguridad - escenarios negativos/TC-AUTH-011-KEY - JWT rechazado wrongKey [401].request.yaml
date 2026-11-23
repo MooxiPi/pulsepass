@@ -1,0 +1,20 @@
+$kind: http-request
+name: TC-AUTH-011-KEY | JWT rechazado wrongKey [401]
+description: |-
+  ID: TC-AUTH-011-KEY
+  Objetivo: JWT rechazado wrongKey
+  Precondiciones: wrongKeyToken firmado offline con clave efímera ajena a la aplicación; recurso protegido.
+  Actor: wrongKey
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 401
+  Revisión manual: ErrorResponse con timestamp, status, error, message y details; sin secretos.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/auth/me"
+method: GET
+headers:
+  Accept: application/json
+auth:
+  type: bearer
+  credentials:
+    token: "{{wrongKeyToken}}"
+order: 34000

@@ -1,0 +1,20 @@
+$kind: http-request
+name: TC-AUTH-013 | Cuenta desactivada después de login [401]
+description: |-
+  ID: TC-AUTH-013
+  Objetivo: Cuenta desactivada después de login
+  Precondiciones: Guardar userBToken aún vigente y desactivar USER_B solo en pulsepass_e2e antes del Send; restaurar después.
+  Actor: userB
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 401
+  Revisión manual: ErrorResponse con timestamp, status, error, message y details; sin secretos.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/auth/me"
+method: GET
+headers:
+  Accept: application/json
+auth:
+  type: bearer
+  credentials:
+    token: "{{userBToken}}"
+order: 38000

@@ -1,0 +1,7 @@
+packages:
+  - '.'
+
+# msw solo se usa en Node (Vitest); su script de instalación (copiar el
+# service worker al proyecto) no es necesario.
+allowBuilds:
+  msw: false

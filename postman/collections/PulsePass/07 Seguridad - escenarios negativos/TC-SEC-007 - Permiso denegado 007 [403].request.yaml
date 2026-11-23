@@ -1,0 +1,20 @@
+$kind: http-request
+name: TC-SEC-007 | Permiso denegado 007 [403]
+description: |-
+  ID: TC-SEC-007
+  Objetivo: Permiso denegado 007
+  Precondiciones: USER_A y USER_B registrados; userBToken vigente; buscar username de A.
+  Actor: userB
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 403
+  Revisión manual: 403 + ErrorResponse; ningún campo privado de USER_A aparece.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/users/by-username?username={{userAUsername}}"
+method: GET
+headers:
+  Accept: application/json
+auth:
+  type: bearer
+  credentials:
+    token: "{{userBToken}}"
+order: 20000

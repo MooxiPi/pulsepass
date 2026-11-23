@@ -1,0 +1,158 @@
+name: PulsePass - E2E template
+values:
+  - key: 'baseUrl'
+    value: 'http://localhost:8080'
+    enabled: true
+    type: default
+  - key: 'runId'
+    value: 'manual01'
+    enabled: true
+    type: default
+  - key: 'userAUsername'
+    value: 'manual01-a'
+    enabled: true
+    type: default
+  - key: 'userAEmail'
+    value: 'manual01-a@example.test'
+    enabled: true
+    type: default
+  - key: 'userBUsername'
+    value: 'manual01-b'
+    enabled: true
+    type: default
+  - key: 'userBEmail'
+    value: 'manual01-b@example.test'
+    enabled: true
+    type: default
+  - key: 'adminIdentifier'
+    value: 'manual01-admin'
+    enabled: true
+    type: default
+  - key: 'staffIdentifier'
+    value: 'manual01-staff'
+    enabled: true
+    type: default
+  - key: 'inactiveIdentifier'
+    value: 'manual01-inactive'
+    enabled: true
+    type: default
+  - key: 'venueActiveCode'
+    value: 'manual01-venue'
+    enabled: true
+    type: default
+  - key: 'artistId'
+    value: ''
+    enabled: true
+    type: default
+  - key: 'artistStageName'
+    value: 'manual01-artist'
+    enabled: true
+    type: default
+  - key: 'publishedEventCode'
+    value: 'manual01-published'
+    enabled: true
+    type: default
+  - key: 'draftEventCode'
+    value: 'manual01-draft'
+    enabled: true
+    type: default
+  - key: 'eventToPublishCode'
+    value: 'manual01-new'
+    enabled: true
+    type: default
+  - key: 'newEventCode'
+    value: 'manual01-new'
+    enabled: true
+    type: default
+  - key: 'soldOutEventCode'
+    value: 'manual01-full'
+    enabled: true
+    type: default
+  - key: 'ageRestrictedEventCode'
+    value: 'manual01-age'
+    enabled: true
+    type: default
+  - key: 'futureEventDate'
+    value: '2027-10-26T20:00:00'
+    enabled: true
+    type: default
+  - key: 'expectedIssuer'
+    value: 'pulsepass-api'
+    enabled: true
+    type: default
+  - key: 'expectedTokenTtlSeconds'
+    value: '900'
+    enabled: true
+    type: default
+  - key: 'expectedForeignResourceStatus'
+    value: '403'
+    enabled: true
+    type: default
+  - key: 'ticketCancelableCode'
+    value: ''
+    enabled: true
+    type: default
+  - key: 'ticketUsableCode'
+    value: ''
+    enabled: true
+    type: default
+  - key: 'malformedToken'
+    value: 'not.a.jwt'
+    enabled: true
+    type: secret
+  - key: 'userAPassword'
+    value: ''
+    enabled: true
+    type: secret
+  - key: 'userAToken'
+    value: ''
+    enabled: true
+    type: secret
+  - key: 'userBPassword'
+    value: ''
+    enabled: true
+    type: secret
+  - key: 'userBToken'
+    value: ''
+    enabled: true
+    type: secret
+  - key: 'adminPassword'
+    value: ''
+    enabled: true
+    type: secret
+  - key: 'adminToken'
+    value: ''
+    enabled: true
+    type: secret
+  - key: 'staffPassword'
+    value: ''
+    enabled: true
+    type: secret
+  - key: 'staffToken'
+    value: ''
+    enabled: true
+    type: secret
+  - key: 'inactivePassword'
+    value: ''
+    enabled: true
+    type: secret
+  - key: 'inactiveToken'
+    value: ''
+    enabled: true
+    type: secret
+  - key: 'tamperedToken'
+    value: ''
+    enabled: true
+    type: secret
+  - key: 'expiredToken'
+    value: ''
+    enabled: true
+    type: secret
+  - key: 'wrongKeyToken'
+    value: ''
+    enabled: true
+    type: secret
+  - key: 'wrongIssuerToken'
+    value: ''
+    enabled: true
+    type: secret

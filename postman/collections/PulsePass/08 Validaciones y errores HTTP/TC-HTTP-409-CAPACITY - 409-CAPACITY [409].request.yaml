@@ -1,0 +1,29 @@
+$kind: http-request
+name: TC-HTTP-409-CAPACITY | 409-CAPACITY [409]
+description: |-
+  ID: TC-HTTP-409-CAPACITY
+  Objetivo: 409-CAPACITY
+  Precondiciones: soldOutEventCode existe en SOLD_OUT; userAToken vigente; no crear ticket.
+  Actor: userA
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 409
+  Revisión manual: ErrorResponse con timestamp, status, error, message y details; sin secretos.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/tickets"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "userEmail": "{{userAEmail}}",
+      "eventCode": "{{soldOutEventCode}}",
+      "type": "GENERAL"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{userAToken}}"
+order: 12000

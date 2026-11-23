@@ -1,0 +1,26 @@
+$kind: http-request
+name: LOGIN-admin | Login admin [200]
+description: |-
+  ID: LOGIN-admin
+  Objetivo: Login admin
+  Precondiciones: Cuenta ADMIN activa aprovisionada por seed; adminPassword local disponible.
+  Actor: ANONYMOUS
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 200
+  Revisión manual: tokenType=Bearer; expiresIn=900; copiar accessToken a adminToken LOCAL. No exportarlo.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/auth/login"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "identifier": "{{adminIdentifier}}",
+      "password": "{{adminPassword}}"
+    }
+auth:
+  type: noauth
+order: 6000

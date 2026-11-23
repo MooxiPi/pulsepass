@@ -1,0 +1,20 @@
+$kind: http-request
+name: TC-AUTH-009 | JWT rechazado tampered [401]
+description: |-
+  ID: TC-AUTH-009
+  Objetivo: JWT rechazado tampered
+  Precondiciones: tamperedToken copiado localmente de un JWT válido y alterado en la firma; recurso protegido.
+  Actor: tampered
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 401
+  Revisión manual: ErrorResponse con timestamp, status, error, message y details; sin secretos.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/auth/me"
+method: GET
+headers:
+  Accept: application/json
+auth:
+  type: bearer
+  credentials:
+    token: "{{tamperedToken}}"
+order: 32000

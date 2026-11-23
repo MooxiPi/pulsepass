@@ -1,0 +1,20 @@
+$kind: http-request
+name: TC-SEC-002-STAFF | Permiso denegado 002-STAFF [403]
+description: |-
+  ID: TC-SEC-002-STAFF
+  Objetivo: Permiso denegado 002-STAFF
+  Precondiciones: draftEventCode existe en DRAFT; staffToken vigente; comprobar estado posterior.
+  Actor: staff
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 403
+  Revisión manual: 403 + ErrorResponse; ADMIN confirma que el evento sigue DRAFT.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/events/{{draftEventCode}}/publish"
+method: PATCH
+headers:
+  Accept: application/json
+auth:
+  type: bearer
+  credentials:
+    token: "{{staffToken}}"
+order: 17000

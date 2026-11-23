@@ -1,0 +1,33 @@
+$kind: http-request
+name: E2E-EVT-01 | Crear evento [201]
+description: |-
+  ID: E2E-EVT-01
+  Objetivo: Crear evento
+  Precondiciones: adminToken vigente; venueActiveCode activo; newEventCode único y futureEventDate futuro.
+  Actor: admin
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 201
+  Revisión manual: status=DRAFT; copiar eventCode a eventToPublishCode. Esta petición usa newEventCode único.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/events"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "eventCode": "{{newEventCode}}",
+      "name": "PulsePass E2E {{runId}}",
+      "description": "Evento manual",
+      "category": "MUSIC",
+      "eventDate": "{{futureEventDate}}",
+      "minimumAge": 0,
+      "venueCode": "{{venueActiveCode}}"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{adminToken}}"
+order: 1000

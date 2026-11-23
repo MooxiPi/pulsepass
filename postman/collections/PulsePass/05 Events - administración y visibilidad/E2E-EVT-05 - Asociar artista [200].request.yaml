@@ -1,0 +1,20 @@
+$kind: http-request
+name: E2E-EVT-05 | Asociar artista [200]
+description: |-
+  ID: E2E-EVT-05
+  Objetivo: Asociar artista
+  Precondiciones: Evento eventToPublishCode en DRAFT; artistId activo; adminToken vigente.
+  Actor: admin
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 200
+  Revisión manual: artists contiene artistId. Repetir asociación devuelve 409.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/events/{{eventToPublishCode}}/artists/{{artistId}}"
+method: POST
+headers:
+  Accept: application/json
+auth:
+  type: bearer
+  credentials:
+    token: "{{adminToken}}"
+order: 3000

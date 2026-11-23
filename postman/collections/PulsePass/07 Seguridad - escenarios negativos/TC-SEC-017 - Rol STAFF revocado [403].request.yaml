@@ -1,0 +1,20 @@
+$kind: http-request
+name: TC-SEC-017 | Rol STAFF revocado [403]
+description: |-
+  ID: TC-SEC-017
+  Objetivo: Rol STAFF revocado
+  Precondiciones: Guardar staffToken vigente y revocar rol STAFF solo en pulsepass_e2e antes del Send; restaurar después.
+  Actor: staff
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 403
+  Revisión manual: ErrorResponse con timestamp, status, error, message y details; sin secretos.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/events/{{publishedEventCode}}/tickets/paid"
+method: GET
+headers:
+  Accept: application/json
+auth:
+  type: bearer
+  credentials:
+    token: "{{staffToken}}"
+order: 39000

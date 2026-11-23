@@ -1,0 +1,20 @@
+$kind: http-request
+name: ME-userB | Identidad userB [200]
+description: |-
+  ID: ME-userB
+  Objetivo: Identidad userB
+  Precondiciones: Login de USER_B completado; userBToken vigente copiado manualmente.
+  Actor: userB
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 200
+  Revisión manual: userId, username, email y roles correctos; USER para A/B, STAFF o ADMIN en fixtures.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/auth/me"
+method: GET
+headers:
+  Accept: application/json
+auth:
+  type: bearer
+  credentials:
+    token: "{{userBToken}}"
+order: 9000

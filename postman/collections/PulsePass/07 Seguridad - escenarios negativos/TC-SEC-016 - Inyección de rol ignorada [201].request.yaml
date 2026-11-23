@@ -1,0 +1,33 @@
+$kind: http-request
+name: TC-SEC-016 | Inyección de rol ignorada [201]
+description: |-
+  ID: TC-SEC-016
+  Objetivo: Inyección de rol ignorada
+  Precondiciones: role-{{runId}} aún no registrado; username sin @ y email distinto de usernames legados; userBPassword local válido; comprobar rol con login y /me sin guardar token en archivo compartido.
+  Actor: ANONYMOUS
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 201
+  Revisión manual: 201 sin privilegio ADMIN. Reutilizar LOGIN-userA con identifier role-{{runId}} y userBPassword, consultar /me con ese token temporal y probar POST /events: roles solo USER y 403. Restaurar las variables de USER_A al terminar.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/users"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "username": "role-{{runId}}",
+      "email": "role-{{runId}}@example.test",
+      "firstName": "Carlos",
+      "lastName": "Pruebas",
+      "phone": "3000000000",
+      "city": "Santa Marta",
+      "birthDate": "1998-05-15",
+      "password": "{{userBPassword}}",
+      "role": "ADMIN"
+    }
+auth:
+  type: noauth
+order: 30000

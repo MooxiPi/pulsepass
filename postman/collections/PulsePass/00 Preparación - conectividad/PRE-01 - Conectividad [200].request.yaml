@@ -1,0 +1,18 @@
+$kind: http-request
+name: PRE-01 | Conectividad [200]
+description: |-
+  ID: PRE-01
+  Objetivo: Conectividad
+  Precondiciones: API real y base pulsepass_e2e arrancadas; seed aplicado.
+  Actor: ANONYMOUS
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 200
+  Revisión manual: 200 y arreglo JSON. No se usa endpoint health inventado.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/venues/active"
+method: GET
+headers:
+  Accept: application/json
+auth:
+  type: noauth
+order: 1000

@@ -1,0 +1,26 @@
+$kind: http-request
+name: TC-AUTH-004 | Login rechazado 004 [401]
+description: |-
+  ID: TC-AUTH-004
+  Objetivo: Login rechazado 004
+  Precondiciones: USER_A registrado; enviar contraseña deliberadamente incorrecta.
+  Actor: ANONYMOUS
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 401
+  Revisión manual: Mismo mensaje genérico en ambos casos; no enumeración.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/auth/login"
+method: POST
+headers:
+  Accept: application/json
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "identifier": "{{userAUsername}}",
+      "password": "WrongPassword2026!"
+    }
+auth:
+  type: noauth
+order: 1000

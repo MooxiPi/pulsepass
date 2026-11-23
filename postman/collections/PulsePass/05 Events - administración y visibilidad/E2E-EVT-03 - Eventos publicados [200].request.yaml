@@ -1,0 +1,18 @@
+$kind: http-request
+name: E2E-EVT-03 | Eventos publicados [200]
+description: |-
+  ID: E2E-EVT-03
+  Objetivo: Eventos publicados
+  Precondiciones: Seed contiene un evento PUBLISHED y draftEventCode en DRAFT; repetir tras publicar evento E2E.
+  Actor: ANONYMOUS
+  Ejecución: abrir esta petición y pulsar Send individualmente.
+  HTTP esperado: 200
+  Revisión manual: Incluye evento publicado; todos status=PUBLISHED; ningún draft.
+  Evidencia: anotar HTTP, JSON, estado persistido y PASS/FAIL/BLOCKED en registro-ejecucion-manual.md. No copiar tokens en evidencia.
+url: "{{baseUrl}}/api/events/published"
+method: GET
+headers:
+  Accept: application/json
+auth:
+  type: noauth
+order: 6000
