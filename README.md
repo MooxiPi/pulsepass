@@ -257,12 +257,12 @@ Para ejecutar pruebas unitarias e integración:
 
 Las clases `*IT` necesitan PostgreSQL de Testcontainers o la
 base de prueba aislada. En la ejecución de `./scripts/Test.ps1`
-del 8 de noviembre de 2026, con WSL activo, pasaron 121 de 121
+del 23 de noviembre de 2026, con WSL activo, pasaron 159 de 159
 pruebas automatizadas (`BUILD SUCCESS`). Este resultado no acredita
 los casos manuales de Postman.
 
 
-## Fase 4: seguridad y verificación E2E
+## Fases 4 y 5: seguridad y verificación
 
 Se conservan los paquetes, las 20 operaciones de negocio y V1–V3. V4 añade `user_credentials` y `user_roles`. El registro público ahora exige `password` (mínimo 12 caracteres, máximo 72 bytes UTF-8), persiste BCrypt y USER en la misma transacción de UserService.register. Los usernames nuevos no pueden contener `@`; un email tampoco puede coincidir con un username legado. Esto evita identificadores ambiguos en el login. No acepta privilegios del cuerpo HTTP. Los usuarios legados no tienen password compartido ni pueden iniciar sesión hasta provisión individual controlada.
 
@@ -270,7 +270,7 @@ Se conservan los paquetes, las 20 operaciones de negocio y V1–V3. V4 añade `u
 
 Configurar PULSEPASS_JWT_SECRET_BASE64 con Base64 de al menos 32 bytes aleatorios; sin clave válida la aplicación no arranca. PULSEPASS_JWT_ISSUER, PULSEPASS_JWT_TTL_SECONDS y PULSEPASS_CORS_ALLOWED_ORIGINS (lista separada por comas, vacía por defecto) son opcionales. `.env.example` es una plantilla: Spring no carga automáticamente archivos .env. No subir secretos. HTTPS obligatorio fuera de localhost/laboratorio. CSRF está desactivado porque no se usa autenticación por cookies.
 
-Políticas: catálogos públicos; el público ve eventos PUBLISHED y SOLD_OUT (agotado sigue publicado, pero la compra responde 409 por aforo); DRAFT, CANCELLED y FINISHED solo los ve STAFF/ADMIN y para el resto devuelven 404. Cancelar un ticket de un evento SOLD_OUT que queda con cupo lo devuelve a PUBLISHED. Crear/publicar/asociar eventos requiere ADMIN. Comprar requiere USER y propietario comprobado por ID persistente. Usuario/tickets por email: propio o ADMIN. Ticket por código: dueño o STAFF/ADMIN. Cancelar: USER dueño o ADMIN. Usar/listar pagados: STAFF/ADMIN. Recursos ajenos devuelven 403 de forma fija. STAFF tiene alcance global operativo en este MVP; no existe asignación por evento. No hay refresh token, denylist/logout revocador, recuperación de password, rate limit ni rotación automática de claves.
+Políticas: catálogos públicos; eventos solo PUBLISHED salvo STAFF/ADMIN; borradores invisibles devuelven 404. Crear/publicar/asociar eventos requiere ADMIN. Comprar requiere USER y propietario comprobado por ID persistente. Usuario/tickets por email: propio o ADMIN. Ticket por código: dueño o STAFF/ADMIN. Cancelar: USER dueño o ADMIN. Usar/listar pagados: STAFF/ADMIN. Recursos ajenos devuelven 403 de forma fija. STAFF tiene alcance global operativo en este MVP; no existe asignación por evento. No hay refresh token, denylist/logout revocador, recuperación de password, rate limit ni rotación automática de claves.
 
 Errores conservan los cinco campos reales `timestamp,status,error,message,details` (el texto del PRD que menciona seis es una errata; su record muestra cinco). En un 400 de validación, `details` trae todos los mensajes de cada campo, ordenados y separados por `; `. Los DTO de entrada limitan la longitud con `@Size` según las columnas de V1, así que un texto demasiado largo responde 400 y no 409. Filtro y MVC usan la misma estructura. Se registran IDs aleatorios de petición y resultados de autenticación/denegación, sin cuerpos, emails, contraseñas ni JWT.
 

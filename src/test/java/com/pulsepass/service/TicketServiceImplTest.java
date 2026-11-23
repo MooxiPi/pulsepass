@@ -473,7 +473,7 @@ class TicketServiceImplTest {
     }
 
     @Test
-    void cancel_ticketOfSoldOutEvent_reopensSales() {
+    void cancel_ticketOfSoldOutEvent_keepsSoldOut() {
 
         User user = createUser(true);
         Event event = createEvent(EventStatus.SOLD_OUT, 0, 3);
@@ -490,41 +490,9 @@ class TicketServiceImplTest {
         when(ticketRepository.save(ticket))
                 .thenReturn(ticket);
 
-        when(ticketRepository.countPaidTicketsByEventCode("CMF-2026"))
-                .thenReturn(2L);
-
         ticketService.cancel("TCK-001");
 
-        assertThat(event.getStatus())
-                .isEqualTo(EventStatus.PUBLISHED);
-
-        verify(eventRepository)
-                .save(event);
-    }
-
-    @Test
-    void cancel_soldOutEventStillAtCapacity_keepsSoldOut() {
-
-        User user = createUser(true);
-        Event event = createEvent(EventStatus.SOLD_OUT, 0, 3);
-
-        Ticket ticket = createTicket(
-                TicketStatus.PAID,
-                user,
-                event
-        );
-
-        when(ticketRepository.findByTicketCode("TCK-001"))
-                .thenReturn(Optional.of(ticket));
-
-        when(ticketRepository.save(ticket))
-                .thenReturn(ticket);
-
-        when(ticketRepository.countPaidTicketsByEventCode("CMF-2026"))
-                .thenReturn(3L);
-
-        ticketService.cancel("TCK-001");
-
+        // El ciclo de vida del PRD de servicios no tiene SOLD_OUT -> PUBLISHED.
         assertThat(event.getStatus())
                 .isEqualTo(EventStatus.SOLD_OUT);
 

@@ -43,11 +43,12 @@ Esta matriz conecta los requisitos principales del PRD con el código y las prue
 | JWT HS256 firmado, con emisor, vencimiento y claims requeridos | `JwtService`, `JwtAuthenticationFilter` | `JwtServiceTest`, `SecurityHttpIT.invalidSignedTokensRejectedOverHttp` |
 | Sesión stateless, sin autenticación por cookie o query string | `SecurityConfig`, `JwtAuthenticationFilter` | `SecurityHttpIT.duplicateHeadersAndSessionsCannotAuthenticate`, `SecurityHttpIT.loginErrorsAndInvalidTokens` |
 | Catálogos públicos y borradores ocultos para usuarios no operadores | `SecurityConfig`, `EventServiceImpl` | `SecurityHttpIT.publicCatalogAndDraftPrivacy` |
-| Permisos por rol y propietario para eventos, usuarios y tickets | `SecurityConfig`, `security.AuthorizationService`, `*ServiceImpl` | `SecurityHttpIT.anonymousProtectedMatrix`, `SecurityHttpIT.userForbiddenMatrix`, `SecurityHttpIT.ownershipAndTicketLifecycle` |
+| Permisos por rol y propietario para eventos, usuarios y tickets | `SecurityConfig`, `AuthorizationService`, `*ServiceImpl` | `SecurityHttpIT.anonymousProtectedMatrix`, `SecurityHttpIT.userForbiddenMatrix`, `SecurityHttpIT.ownershipAndTicketLifecycle` |
 | Estado y roles recargados en cada solicitud | `CustomUserDetailsService`, `JwtAuthenticationFilter` | `SecurityHttpIT.stateAndRolesReloaded` |
 | Respuestas 401/403 y contrato de error uniforme | `SecurityErrorWriter`, `GlobalExceptionHandler` | `SecurityHttpIT` |
+| Pruebas unitarias de seguridad del PRD §17.1 | `AuthServiceImpl`, `CustomUserDetailsService`, `AuthorizationService`, `JwtAuthenticationFilter` | `AuthServiceTest`, `CustomUserDetailsServiceTest`, `AuthorizationServiceTest`, `JwtAuthenticationFilterTest`, `JwtServiceTest` |
 
-## Fase 4: E2E manual en Postman
+## Fase 5: E2E manual en Postman
 
 La colección `tests/e2e/postman/PulsePass-Manual-E2E.postman_collection.json`
 contiene 88 solicitudes sin scripts ni aserciones automáticas. Su plantilla
@@ -60,11 +61,11 @@ individualmente con Postman Send y quedaron registrados como **PASS**; la
 evidencia de Postman Local History permanece en el equipo de ejecución.
 Las pruebas Java no reemplazan esa evidencia manual.
 
-## Fase 5: ajustes del backend para el frontend
+## Fase 5: ajustes del backend para el frontend React
 
 | Requisito | Implementación | Verificación automatizada |
 |---|---|---|
-| Un evento SOLD_OUT sigue visible para el público con la compra rechazada por aforo (PRD frontend: cartelera y detalle muestran "Agotado"). Amplía FR-EVT-005: `/published` devuelve PUBLISHED y SOLD_OUT; DRAFT y CANCELLED siguen ocultos (AC-006) | `EventServiceImpl.PUBLIC_STATUSES`, `EventRepository.findByStatusInOrderByEventDateAsc` | `EventServiceImplTest.findByCode_soldOutEvent_isVisibleToPublic`, `findPublishedEvents_includesSoldOutEvents`, `findByArtist_publicSeesPublishedAndSoldOutOnly` |
-| Cancelar un ticket que libera aforo devuelve el evento SOLD_OUT a PUBLISHED | `TicketServiceImpl.cancel` | `TicketServiceImplTest.cancel_ticketOfSoldOutEvent_reopensSales`, `cancel_soldOutEventStillAtCapacity_keepsSoldOut` |
+| El público solo ve eventos PUBLISHED (FR-SEC-EVT-02/05); SOLD_OUT, DRAFT, CANCELLED y FINISHED responden 404 salvo a STAFF/ADMIN | `EventServiceImpl.isVisible`, `service.AuthorizationService.isOperator` | `EventServiceImplTest.findByCode_soldOutEventForPublic_throwsNotFound`, `findPublishedEvents_queriesOnlyPublishedStatus`, `findByArtist_publicSeesPublishedOnly` |
+| Cancelar un ticket no cambia el estado del evento (sin transición SOLD_OUT → PUBLISHED) | `TicketServiceImpl.cancel` | `TicketServiceImplTest.cancel_ticketOfSoldOutEvent_keepsSoldOut` |
 | 400 con todos los mensajes de validación por campo, en orden estable | `GlobalExceptionHandler.handleValidation` | `UserControllerTest.register_fieldWithSeveralViolations_reportsAllSorted`, `register_blankUsername_reportsOnlyRequiredMessage` |
 | Longitudes validadas antes de la base de datos (400, no 409) | `@Size` en `RegisterUserRequest`, `PurchaseTicketRequest`, `CreateEventRequest` | `UserControllerTest.register_tooLongUsername_returns400InsteadOf409` |

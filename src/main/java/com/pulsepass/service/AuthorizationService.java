@@ -1,10 +1,11 @@
-package com.pulsepass.security;
+package com.pulsepass.service;
 
 import com.pulsepass.repository.TicketRepository;
 import com.pulsepass.repository.UserRepository;
+import com.pulsepass.security.SecurityPrincipal;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
@@ -16,7 +17,7 @@ import java.util.Set;
  * ({@code @authorizationService.email(#email)}). Los servicios lo inyectan para decidir si
  * el usuario actual puede ver eventos que no son públicos.</p>
  */
-@Component("authorizationService")
+@Service("authorizationService")
 @Transactional(readOnly = true)
 public class AuthorizationService {
 

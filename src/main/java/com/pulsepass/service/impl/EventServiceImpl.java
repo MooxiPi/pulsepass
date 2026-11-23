@@ -14,7 +14,7 @@ import com.pulsepass.mapper.EventMapper;
 import com.pulsepass.repository.ArtistRepository;
 import com.pulsepass.repository.EventRepository;
 import com.pulsepass.repository.VenueRepository;
-import com.pulsepass.security.AuthorizationService;
+import com.pulsepass.service.AuthorizationService;
 import com.pulsepass.service.EventService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -23,18 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 @Service
 @Transactional(readOnly = true)
 public class EventServiceImpl implements EventService {
-
-    /**
-     * Estados visibles para cualquier visitante. Un evento SOLD_OUT sigue publicado: se muestra
-     * en la cartelera y en su detalle, pero la compra la rechaza TicketService por aforo.
-     */
-    private static final Set<EventStatus> PUBLIC_STATUSES =
-            Set.of(EventStatus.PUBLISHED, EventStatus.SOLD_OUT);
 
     private final EventRepository eventRepository;
     private final VenueRepository venueRepository;
@@ -117,8 +109,8 @@ public class EventServiceImpl implements EventService {
 
         Event event = findEventOrThrow(eventCode);
 
-        // Los no publicados (DRAFT, CANCELLED, FINISHED) solo los ve STAFF/ADMIN;
-        // al resto se le responde 404 para no revelar que existen.
+        // Solo PUBLISHED es público (FR-SEC-EVT-02/05); el resto de estados solo los ve
+        // STAFF/ADMIN y a los demás se les responde 404 para no revelar que existen.
         if (!isVisible(event)) {
             throw new ResourceNotFoundException("Event not found");
         }
@@ -130,7 +122,7 @@ public class EventServiceImpl implements EventService {
     public List<EventSummaryResponse> findPublishedEvents() {
 
         return eventRepository
-                .findByStatusInOrderByEventDateAsc(PUBLIC_STATUSES)
+                .findByStatusOrderByEventDateAsc(EventStatus.PUBLISHED)
                 .stream()
                 .map(eventMapper::toSummary)
                 .toList();
@@ -229,7 +221,7 @@ public class EventServiceImpl implements EventService {
 
     private boolean isVisible(Event event) {
 
-        return PUBLIC_STATUSES.contains(event.getStatus())
+        return event.getStatus() == EventStatus.PUBLISHED
                 || authorizationService.isOperator();
     }
 

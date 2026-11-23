@@ -13,7 +13,7 @@ import com.pulsepass.mapper.EventMapper;
 import com.pulsepass.repository.ArtistRepository;
 import com.pulsepass.repository.EventRepository;
 import com.pulsepass.repository.VenueRepository;
-import com.pulsepass.security.AuthorizationService;
+import com.pulsepass.service.AuthorizationService;
 import com.pulsepass.service.impl.EventServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +24,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -121,22 +120,23 @@ class EventServiceImplTest {
     }
 
     @Test
-    void findByCode_soldOutEvent_isVisibleToPublic() {
+    void findByCode_soldOutEventForPublic_throwsNotFound() {
 
         Event event = createEvent("SOLD-2026", EventStatus.SOLD_OUT);
-        EventResponse expected = response(event);
 
         when(eventRepository.findByEventCode("SOLD-2026"))
                 .thenReturn(Optional.of(event));
 
-        when(eventMapper.toResponse(event))
-                .thenReturn(expected);
+        when(authorizationService.isOperator())
+                .thenReturn(false);
 
-        assertThat(eventService.findByCode("SOLD-2026"))
-                .isEqualTo(expected);
+        assertThatThrownBy(() ->
+                eventService.findByCode("SOLD-2026")
+        )
+                .isInstanceOf(ResourceNotFoundException.class);
 
-        verify(authorizationService, never())
-                .isOperator();
+        verify(eventMapper, never())
+                .toResponse(any(Event.class));
     }
 
     @Test
@@ -179,24 +179,22 @@ class EventServiceImplTest {
     }
 
     @Test
-    void findPublishedEvents_includesSoldOutEvents() {
+    void findPublishedEvents_queriesOnlyPublishedStatus() {
 
         Event published = createEvent("PUB-2026", EventStatus.PUBLISHED);
-        Event soldOut = createEvent("SOLD-2026", EventStatus.SOLD_OUT);
 
-        when(eventRepository.findByStatusInOrderByEventDateAsc(
-                Set.of(EventStatus.PUBLISHED, EventStatus.SOLD_OUT)))
-                .thenReturn(List.of(published, soldOut));
+        when(eventRepository.findByStatusOrderByEventDateAsc(EventStatus.PUBLISHED))
+                .thenReturn(List.of(published));
 
         assertThat(eventService.findPublishedEvents())
-                .hasSize(2);
+                .hasSize(1);
 
         verify(eventMapper)
-                .toSummary(soldOut);
+                .toSummary(published);
     }
 
     @Test
-    void findByArtist_publicSeesPublishedAndSoldOutOnly() {
+    void findByArtist_publicSeesPublishedOnly() {
 
         Event published = createEvent("PUB-2026", EventStatus.PUBLISHED);
         Event soldOut = createEvent("SOLD-2026", EventStatus.SOLD_OUT);
@@ -209,7 +207,13 @@ class EventServiceImplTest {
                 .thenReturn(false);
 
         assertThat(eventService.findByArtist("Sol"))
-                .hasSize(2);
+                .hasSize(1);
+
+        verify(eventMapper)
+                .toSummary(published);
+
+        verify(eventMapper, never())
+                .toSummary(soldOut);
 
         verify(eventMapper, never())
                 .toSummary(draft);

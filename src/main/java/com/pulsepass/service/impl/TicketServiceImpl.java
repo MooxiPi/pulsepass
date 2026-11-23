@@ -216,8 +216,6 @@ public class TicketServiceImpl implements TicketService {
         Ticket savedTicket =
                 ticketRepository.save(ticket);
 
-        reopenSalesIfCapacityFreed(ticket.getEvent());
-
         return ticketMapper.toResponse(savedTicket);
     }
 
@@ -240,27 +238,6 @@ public class TicketServiceImpl implements TicketService {
                 ticketRepository.save(ticket);
 
         return ticketMapper.toResponse(savedTicket);
-    }
-
-    /**
-     * Si la cancelación libera aforo en un evento SOLD_OUT, el evento vuelve a PUBLISHED
-     * para que el cupo se pueda vender de nuevo.
-     */
-    private void reopenSalesIfCapacityFreed(Event event) {
-
-        if (event.getStatus() != EventStatus.SOLD_OUT) {
-            return;
-        }
-
-        long paidTickets =
-                ticketRepository.countPaidTicketsByEventCode(
-                        event.getEventCode()
-                );
-
-        if (paidTickets < event.getVenue().getCapacity()) {
-            event.setStatus(EventStatus.PUBLISHED);
-            eventRepository.save(event);
-        }
     }
 
     private Ticket findTicketOrThrow(String ticketCode) {
